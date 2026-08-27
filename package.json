@@ -1,0 +1,23 @@
+{
+   "name": "eslint-plugin-kaezon",
+   "version": "1.0.0",
+   "description": "ESLint 10 flat-config plugin with custom TypeScript and Vue rules.",
+   "type": "module",
+   "exports": {
+      ".": {
+         "types": "./index.d.ts",
+         "import": "./index.js",
+         "default": "./index.js"
+      }
+   },
+   "files": [
+      "index.js",
+      "index.d.ts",
+      "configs/**",
+      "eslint-rules/**",
+      "README.md"
+   ],
+   "peerDependencies": {
+      "eslint": "^10.0.0"
+   }
+}
