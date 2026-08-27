@@ -6,6 +6,12 @@ The package exposes the rules as a single plugin (`kaezon`) and three presets: T
 
 Vue + TypeScript apps should use `configs.all` (or `createConfig({ preset: 'all' })`).
 
+## Test
+
+```sh
+pnpm test
+```
+
 ## Install
 
 Peer dependency: **ESLint 10**, flat config only (`eslint.config.js`). Pin a **tag**, not a branch.
