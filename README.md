@@ -52,30 +52,30 @@ export default [
 ## Usage
 
 ```js
-import kaezon from 'eslint-plugin-kaezon'
+import kaezon_plugin from 'eslint-plugin-kaezon'
 
-export default [kaezon.configs.ts]
+export default [kaezon_plugin.configs.ts]
 ```
 
 ```js
-import kaezon from 'eslint-plugin-kaezon'
+import kaezon_plugin from 'eslint-plugin-kaezon'
 
-export default [kaezon.configs.vue]
+export default [kaezon_plugin.configs.vue]
 ```
 
 ```js
-import kaezon from 'eslint-plugin-kaezon'
+import kaezon_plugin from 'eslint-plugin-kaezon'
 
-export default [kaezon.configs.all]
+export default [kaezon_plugin.configs.all]
 ```
 
 Turn off one rule from a preset:
 
 ```js
-import kaezon from 'eslint-plugin-kaezon'
+import kaezon_plugin from 'eslint-plugin-kaezon'
 
 export default [
-   kaezon.createConfig({
+   kaezon_plugin.createConfig({
       preset: 'all',
       rules: { 'prefer-object-params': 'off' },
    }),
@@ -85,10 +85,10 @@ export default [
 Register the plugin with no preset rules, then enable a subset:
 
 ```js
-import kaezon from 'eslint-plugin-kaezon'
+import kaezon_plugin from 'eslint-plugin-kaezon'
 
 export default [
-   kaezon.createConfig({
+   kaezon_plugin.createConfig({
       preset: 'none',
       rules: {
          'const-case': 'error',
@@ -101,10 +101,10 @@ export default [
 Override a rule in a following config object:
 
 ```js
-import kaezon from 'eslint-plugin-kaezon'
+import kaezon_plugin from 'eslint-plugin-kaezon'
 
 export default [
-   kaezon.configs.all,
+   kaezon_plugin.configs.all,
    { rules: { 'kaezon/const-case': 'off' } },
 ]
 ```

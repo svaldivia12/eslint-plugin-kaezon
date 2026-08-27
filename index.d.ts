@@ -28,6 +28,6 @@ export interface KaezonPlugin {
    rules: ESLint.Plugin['rules']
 }
 
-declare const kaezon: KaezonPlugin
+declare const kaezon_plugin: KaezonPlugin
 
-export default kaezon
+export default kaezon_plugin
