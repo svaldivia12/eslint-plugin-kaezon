@@ -21,15 +21,17 @@ export const VUE_RULES = [
    'vue-prop-name-casing-by-type',
 ]
 
+export const PARSER_RULES = ['require-typescript-parser']
+
 const VALID_SHORT_NAMES = Object.keys(rules_module.rules)
 
 const VALID_SHORT_NAME_SET = new Set(VALID_SHORT_NAMES)
 
 const PRESET_RULES = {
-   all: [...TS_RULES, ...VUE_RULES],
+   all: [...PARSER_RULES, ...TS_RULES, ...VUE_RULES],
    none: [],
-   ts: TS_RULES,
-   vue: VUE_RULES,
+   ts: [...PARSER_RULES, ...TS_RULES],
+   vue: [...PARSER_RULES, ...VUE_RULES],
 }
 
 const PRESET_CONFIG_NAMES = {

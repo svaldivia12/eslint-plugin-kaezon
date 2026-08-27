@@ -2,6 +2,7 @@ import computed_explicit_return_type_rule from './computed-explicit-return-type.
 import const_case_rule from './const-case.js'
 import prefer_object_params_rule from './prefer-object-params.js'
 import require_satisfies_with_as_const_rule from './require-satisfies-with-as-const.js'
+import require_typescript_parser_rule from './require-typescript-parser.js'
 import vue_prop_name_casing_by_type_rule from './vue-prop-name-casing-by-type.js'
 
 export default {
@@ -10,6 +11,7 @@ export default {
       'const-case': const_case_rule,
       'prefer-object-params': prefer_object_params_rule,
       'require-satisfies-with-as-const': require_satisfies_with_as_const_rule,
+      'require-typescript-parser': require_typescript_parser_rule,
       'vue-prop-name-casing-by-type': vue_prop_name_casing_by_type_rule,
    },
 }

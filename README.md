@@ -28,6 +28,27 @@ Some rules inspect TypeScript AST nodes (`TSAsExpression`, `TSSatisfiesExpressio
 
 Use `@typescript-eslint/parser` for `.ts` / `.tsx` files, and `vue-eslint-parser` (with a TypeScript parser) for `.vue` files.
 
+The `ts`, `vue`, and `all` presets enable `kaezon/require-typescript-parser` as `'error'`. If that rule reports, the app's `languageOptions.parser` is wrong — it is not a false positive from the style rules. Typical setup:
+
+```js
+import ts_parser from '@typescript-eslint/parser'
+import vue_parser from 'vue-eslint-parser'
+
+export default [
+   {
+      files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
+      languageOptions: { parser: ts_parser },
+   },
+   {
+      files: ['**/*.vue'],
+      languageOptions: {
+         parser: vue_parser,
+         parserOptions: { parser: ts_parser },
+      },
+   },
+]
+```
+
 ## Usage
 
 ```js
@@ -100,6 +121,7 @@ Optional `files` replaces the default globs (`**/*.ts`, `**/*.tsx`, `**/*.mts`, 
 | `kaezon/const-case` | Require UPPER_CASE for literal and `as const` declarations, and lower case for mutable or computed bindings | ts, all |
 | `kaezon/prefer-object-params` | Prefer a single object parameter over multiple positional parameters | ts, all |
 | `kaezon/require-satisfies-with-as-const` | Require `as const satisfies SomeType` instead of bare `as const` to validate structure at compile time | ts, all |
+| `kaezon/require-typescript-parser` | Require a TypeScript parser for TS files, and `vue-eslint-parser` with a TypeScript parser for Vue files | ts, vue, all |
 | `kaezon/vue-prop-name-casing-by-type` | Enforce camelCase for function props and snake_case for other props in `defineProps` | vue, all |
 
 ## API
@@ -107,7 +129,7 @@ Optional `files` replaces the default globs (`**/*.ts`, `**/*.tsx`, `**/*.mts`, 
 Default export:
 
 - `meta` — `{ name: 'eslint-plugin-kaezon', version }` (version is read from `package.json`)
-- `rules` — the five custom rules
+- `rules` — the custom style rules plus `require-typescript-parser`
 - `configs.ts` / `configs.vue` / `configs.all` — one flat config object each
 - `createConfig(options?)` — build one flat config from a preset plus optional overlay
 
@@ -117,4 +139,4 @@ Default export:
 - `files` — glob list; replaces the default globs when passed
 - `rules` — overlay; wins over the preset. Unknown names throw.
 
-Unknown `preset` or rule name throws. Valid short names are the five ids in the table above without the `kaezon/` prefix.
+Unknown `preset` or rule name throws. Valid short names are the ids in the table above without the `kaezon/` prefix.
