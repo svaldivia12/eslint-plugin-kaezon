@@ -2,9 +2,11 @@
 
 ESLint 10 flat-config plugin with custom TypeScript and Vue rules. Install it from a private Git URL; it is not published to npm.
 
-The package exposes the rules as a single plugin (`kaezon`) and three presets: TypeScript-only, Vue-only, and both. You can enable, disable, or override individual rules without other packages.
+The package exposes the rules as a single plugin (`kaezon`) and three presets: TypeScript-only, Vue-only, and Nuxt (Vue + TypeScript house style). You can enable, disable, or override individual rules without other packages.
 
-Vue + TypeScript apps should use `configs.all` (or `createConfig({ preset: 'all' })`).
+Vue + TypeScript / Nuxt apps should use `configs.nuxt` (or `createConfig({ preset: 'nuxt' })`).
+
+`ts`, `vue`, and `none` enable only custom `kaezon/*` rules — no house style.
 
 ## Test
 
@@ -34,7 +36,7 @@ Some rules inspect TypeScript AST nodes (`TSAsExpression`, `TSSatisfiesExpressio
 
 Use `@typescript-eslint/parser` for `.ts` / `.tsx` files, and `vue-eslint-parser` (with a TypeScript parser) for `.vue` files.
 
-The `ts`, `vue`, and `all` presets enable `kaezon/require-typescript-parser` as `'error'`. If that rule reports, the app's `languageOptions.parser` is wrong — it is not a false positive from the style rules. Typical setup:
+The `ts`, `vue`, and `nuxt` presets enable `kaezon/require-typescript-parser` as `'error'`. If that rule reports, the app's `languageOptions.parser` is wrong — it is not a false positive from the style rules. Typical setup:
 
 ```js
 import ts_parser from '@typescript-eslint/parser'
@@ -72,7 +74,7 @@ export default [kaezon_plugin.configs.vue]
 ```js
 import kaezon_plugin from 'eslint-plugin-kaezon'
 
-export default [kaezon_plugin.configs.all]
+export default [kaezon_plugin.configs.nuxt]
 ```
 
 Turn off one rule from a preset:
@@ -82,7 +84,7 @@ import kaezon_plugin from 'eslint-plugin-kaezon'
 
 export default [
    kaezon_plugin.createConfig({
-      preset: 'all',
+      preset: 'nuxt',
       rules: { 'prefer-object-params': 'off' },
    }),
 ]
@@ -110,25 +112,39 @@ Override a rule in a following config object:
 import kaezon_plugin from 'eslint-plugin-kaezon'
 
 export default [
-   kaezon_plugin.configs.all,
+   kaezon_plugin.configs.nuxt,
    { rules: { 'kaezon/const-case': 'off' } },
 ]
 ```
 
-`createConfig` keys accept short names (`const-case`) or prefixed ids (`kaezon/const-case`). Emitted configs always use prefixed ids.
+`createConfig` keys accept kaezon short names (`const-case`) or prefixed ids (`kaezon/const-case`); those emit prefixed `kaezon/...` ids. Other ESLint rule ids (`curly`, `@typescript-eslint/...`, `vue/...`) are copied through so house style can be overridden without a second config object. Unknown `kaezon/...` names throw.
 
 Optional `files` replaces the default globs (`**/*.ts`, `**/*.tsx`, `**/*.mts`, `**/*.cts`, `**/*.vue`).
+
+## Nuxt house style
+
+`configs.nuxt` enables every custom `kaezon/*` rule that applies to Vue + TypeScript, plus this house style:
+
+- `@typescript-eslint/explicit-function-return-type`: `['error', { allowTypedFunctionExpressions: false }]`
+- `@typescript-eslint/naming-convention`: camelCase for function variables/parameters; `snake_case` / `UPPER_CASE` for `const`; `snake_case` for other variables and parameters; `is_` prefix for booleans; `snake_case` for type properties
+- `curly`: `['error', 'multi']`
+- `no-restricted-syntax`: forbid `defineEmits` (use props/callbacks instead)
+- `vue/prop-name-casing`: `'off'` (`kaezon/vue-prop-name-casing-by-type` replaces it)
+
+`@typescript-eslint/*` house rules and `vue/prop-name-casing` require the consuming app to already register `@typescript-eslint` and `eslint-plugin-vue`. This plugin does not ship those parsers or plugins.
+
+`ts`, `vue`, and `none` do not include house style.
 
 ## Rules
 
 | Rule id | Description | Presets |
 |---|---|---|
-| `kaezon/computed-explicit-return-type` | Require explicit return types for getters passed to `computed` | vue, all |
-| `kaezon/const-case` | Require UPPER_CASE for literal and `as const` declarations, and lower case for mutable or computed bindings | ts, all |
-| `kaezon/prefer-object-params` | Prefer a single object parameter over multiple positional parameters | ts, all |
-| `kaezon/require-satisfies-with-as-const` | Require `as const satisfies SomeType` instead of bare `as const` to validate structure at compile time | ts, all |
-| `kaezon/require-typescript-parser` | Require a TypeScript parser for TS files, and `vue-eslint-parser` with a TypeScript parser for Vue files | ts, vue, all |
-| `kaezon/vue-prop-name-casing-by-type` | Enforce camelCase for function props and snake_case for other props in `defineProps` | vue, all |
+| `kaezon/computed-explicit-return-type` | Require explicit return types for getters passed to `computed` | vue, nuxt |
+| `kaezon/const-case` | Require UPPER_CASE for literal and `as const` declarations, and lower case for mutable or computed bindings | ts, nuxt |
+| `kaezon/prefer-object-params` | Prefer a single object parameter over multiple positional parameters | ts, nuxt |
+| `kaezon/require-satisfies-with-as-const` | Require `as const satisfies SomeType` instead of bare `as const` to validate structure at compile time | ts, nuxt |
+| `kaezon/require-typescript-parser` | Require a TypeScript parser for TS files, and `vue-eslint-parser` with a TypeScript parser for Vue files | ts, vue, nuxt |
+| `kaezon/vue-prop-name-casing-by-type` | Enforce camelCase for function props and snake_case for other props in `defineProps` | vue, nuxt |
 
 ## API
 
@@ -136,13 +152,13 @@ Default export:
 
 - `meta` — `{ name: 'eslint-plugin-kaezon', version }` (version is read from `package.json`)
 - `rules` — the custom style rules plus `require-typescript-parser`
-- `configs.ts` / `configs.vue` / `configs.all` — one flat config object each
+- `configs.ts` / `configs.vue` / `configs.nuxt` — one flat config object each
 - `createConfig(options?)` — build one flat config from a preset plus optional overlay
 
 `createConfig` options:
 
-- `preset` — `'ts' | 'vue' | 'all' | 'none'` (default `'all'`). `'none'` registers `plugins: { kaezon }` with no rules on, then applies `rules`.
+- `preset` — `'ts' | 'vue' | 'nuxt' | 'none'` (default `'nuxt'`). `'none'` registers `plugins: { kaezon }` with no rules on, then applies `rules`.
 - `files` — glob list; replaces the default globs when passed
-- `rules` — overlay; wins over the preset. Unknown names throw.
+- `rules` — overlay; wins over the preset. Kaezon short names and `kaezon/...` ids are validated; other ESLint rule ids pass through.
 
-Unknown `preset` or rule name throws. Valid short names are the ids in the table above without the `kaezon/` prefix.
+Unknown `preset` throws. Unknown `kaezon/...` names throw. Valid short names are the ids in the table above without the `kaezon/` prefix.
