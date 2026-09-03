@@ -51,6 +51,11 @@ export const NUXT_HOUSE_RULES = {
          types: ['boolean'],
       },
       {
+         format: ['camelCase'],
+         selector: 'typeProperty',
+         types: ['function'],
+      },
+      {
          format: ['snake_case'],
          selector: 'typeProperty',
       },
