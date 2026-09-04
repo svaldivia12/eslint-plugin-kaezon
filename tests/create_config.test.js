@@ -26,6 +26,10 @@ function assert_nuxt_config(config) {
    assert.equal(config.rules['no-restricted-syntax'][0], 'error')
    assert.ok(Array.isArray(config.rules['@typescript-eslint/naming-convention']))
    assert.equal(config.rules['@typescript-eslint/naming-convention'][0], 'error')
+   assert.deepEqual(config.rules['@typescript-eslint/naming-convention'][1], {
+      format: ['camelCase'],
+      selector: 'function',
+   })
    assert.ok(
       Array.isArray(config.rules['@typescript-eslint/explicit-function-return-type']),
    )

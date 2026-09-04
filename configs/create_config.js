@@ -32,6 +32,10 @@ export const NUXT_HOUSE_RULES = {
       'error',
       {
          format: ['camelCase'],
+         selector: 'function',
+      },
+      {
+         format: ['camelCase'],
          selector: ['variable', 'parameter'],
          types: ['function'],
       },

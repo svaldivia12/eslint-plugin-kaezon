@@ -126,7 +126,7 @@ Optional `files` replaces the default globs (`**/*.ts`, `**/*.tsx`, `**/*.mts`, 
 `configs.nuxt` enables every custom `kaezon/*` rule that applies to Vue + TypeScript, plus this house style:
 
 - `@typescript-eslint/explicit-function-return-type`: `['error', { allowTypedFunctionExpressions: false }]`
-- `@typescript-eslint/naming-convention`: camelCase for function variables/parameters; `snake_case` / `UPPER_CASE` for `const`; `snake_case` for other variables and parameters; `is_` prefix for booleans; `snake_case` for type properties
+- `@typescript-eslint/naming-convention`: camelCase for function declarations and function-typed variables/parameters; `snake_case` / `UPPER_CASE` for `const`; `snake_case` for other variables and parameters; `is_` prefix for booleans; camelCase for function-typed type properties; `snake_case` for other type properties
 - `curly`: `['error', 'multi']`
 - `no-restricted-syntax`: forbid `defineEmits` (use props/callbacks instead)
 - `vue/prop-name-casing`: `'off'` (`kaezon/vue-prop-name-casing-by-type` replaces it)
