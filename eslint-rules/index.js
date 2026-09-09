@@ -1,3 +1,4 @@
+import boolean_is_prefix_rule from './boolean-is-prefix.js'
 import computed_explicit_return_type_rule from './computed-explicit-return-type.js'
 import const_case_rule from './const-case.js'
 import prefer_object_params_rule from './prefer-object-params.js'
@@ -7,6 +8,7 @@ import vue_prop_name_casing_by_type_rule from './vue-prop-name-casing-by-type.js
 
 export default {
    rules: {
+      'boolean-is-prefix': boolean_is_prefix_rule,
       'computed-explicit-return-type': computed_explicit_return_type_rule,
       'const-case': const_case_rule,
       'prefer-object-params': prefer_object_params_rule,

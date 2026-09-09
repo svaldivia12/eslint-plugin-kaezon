@@ -17,6 +17,7 @@ export const TS_RULES = [
 ]
 
 export const VUE_RULES = [
+   'boolean-is-prefix',
    'computed-explicit-return-type',
    'vue-prop-name-casing-by-type',
 ]
@@ -47,12 +48,6 @@ export const NUXT_HOUSE_RULES = {
       {
          format: ['snake_case'],
          selector: ['variable', 'parameter'],
-      },
-      {
-         format: ['snake_case'],
-         prefix: ['is_'],
-         selector: ['variable', 'parameter'],
-         types: ['boolean'],
       },
       {
          format: ['camelCase'],

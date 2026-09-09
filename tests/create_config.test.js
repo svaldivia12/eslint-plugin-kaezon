@@ -7,6 +7,7 @@ const CUSTOM_NUXT_RULES = [
    'kaezon/const-case',
    'kaezon/prefer-object-params',
    'kaezon/require-satisfies-with-as-const',
+   'kaezon/boolean-is-prefix',
    'kaezon/computed-explicit-return-type',
    'kaezon/vue-prop-name-casing-by-type',
 ]
@@ -59,7 +60,12 @@ describe('createConfig', () => {
          kaezon.configs.vue.rules['kaezon/computed-explicit-return-type'],
          'error',
       )
+      assert.equal(
+         kaezon.configs.vue.rules['kaezon/boolean-is-prefix'],
+         'error',
+      )
       assert.equal(kaezon.configs.ts.rules['kaezon/computed-explicit-return-type'], undefined)
+      assert.equal(kaezon.configs.ts.rules['kaezon/boolean-is-prefix'], undefined)
       assert.equal(kaezon.configs.vue.rules['kaezon/const-case'], undefined)
       assert.equal(kaezon.configs.ts.rules.curly, undefined)
       assert.equal(kaezon.configs.vue.rules.curly, undefined)
