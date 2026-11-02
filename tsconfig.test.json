@@ -1,0 +1,17 @@
+{
+   "extends": "./tsconfig.json",
+   "compilerOptions": {
+      "declaration": false,
+      "declarationMap": false,
+      "noEmit": true,
+      "types": ["node"]
+   },
+   "include": [
+      "index.ts",
+      "configs/**/*.ts",
+      "eslint-rules/**/*.ts",
+      "scripts/**/*.ts",
+      "tests/**/*.ts",
+      "eslint.config.js"
+   ]
+}

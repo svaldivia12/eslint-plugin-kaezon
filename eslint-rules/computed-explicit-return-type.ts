@@ -1,24 +1,28 @@
-function isComputedCall(node) {
+import type { KaezonRule, TSESTree } from '../types.ts'
+
+function is_computed_call(node: TSESTree.Node): node is TSESTree.CallExpression {
    if (node.type !== 'CallExpression') return false
 
-   const callee = node.callee
+   const { callee } = node
    return callee.type === 'Identifier' && callee.name === 'computed'
 }
 
-function isFunctionGetter(node) {
+function is_function_getter(
+   node: TSESTree.Node | undefined,
+): node is TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression {
    return (
       node?.type === 'ArrowFunctionExpression' ||
       node?.type === 'FunctionExpression'
    )
 }
 
-export default {
+const rule: KaezonRule<'missingReturnType'> = {
    create(context) {
-      function visitCallExpression(node) {
-         if (!isComputedCall(node)) return
+      function visit_call_expression(node: TSESTree.CallExpression): void {
+         if (!is_computed_call(node)) return
 
          const getter = node.arguments[0]
-         if (!isFunctionGetter(getter)) return
+         if (!is_function_getter(getter)) return
          if (getter.returnType?.type === 'TSTypeAnnotation') return
 
          context.report({
@@ -28,7 +32,7 @@ export default {
       }
 
       return {
-         CallExpression: visitCallExpression,
+         CallExpression: visit_call_expression,
       }
    },
    meta: {
@@ -44,3 +48,5 @@ export default {
       type: 'problem',
    },
 }
+
+export default rule

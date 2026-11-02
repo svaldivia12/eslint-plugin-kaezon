@@ -1,3 +1,4 @@
+import type { TSESLint, TSESTree } from '@typescript-eslint/utils'
 import type { ESLint, Linter } from 'eslint'
 
 export type FlatConfig = Linter.Config
@@ -14,6 +15,21 @@ export interface CreateConfigOptions {
    /** Overlay keys may be kaezon short names, `kaezon/...` ids, or other ESLint rule ids. */
    rules?: Record<string, RuleConfig>
 }
+
+/**
+ * A kaezon rule. Typed with TSESLint so every visitor receives its concrete
+ * TSESTree node and `report` only accepts `messageId`s declared in
+ * `meta.messages`.
+ */
+export type KaezonRule<MessageIds extends string = string> = TSESLint.RuleModule<
+   MessageIds,
+   readonly []
+>
+
+export type KaezonRuleMap = Record<string, KaezonRule>
+
+/** The context object a kaezon rule receives in `create`. */
+export type KaezonRuleContext = Parameters<KaezonRule['create']>[0]
 
 export interface KaezonPlugin {
    configs: {
@@ -38,6 +54,14 @@ export interface KaezonPlugin {
    rules: NonNullable<ESLint.Plugin['rules']>
 }
 
-declare const kaezon_plugin: KaezonPlugin
+/**
+ * TSESLint and ESLint ship structurally different `RuleContext` types for the
+ * same runtime contract, so a TSESLint rule is not assignable to the ESLint
+ * plugin surface without an explicit boundary cast. Keep the cast here and
+ * nowhere else so the rest of the codebase stays fully typed.
+ */
+export function to_plugin_rules(rules: KaezonRuleMap): KaezonPlugin['rules'] {
+   return rules as unknown as KaezonPlugin['rules']
+}
 
-export default kaezon_plugin
+export type { TSESLint, TSESTree }

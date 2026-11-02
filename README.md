@@ -201,11 +201,11 @@ Default export:
 
 Unknown `preset` throws. Unknown `kaezon/...` names throw. Valid short names are the ids in the table above without the `kaezon/` prefix.
 
-TypeScript types ship with the package (`index.d.ts`), including `PresetName`, `CreateConfigOptions`, and `KaezonPlugin`.
+TypeScript types ship with the package (`dist/index.d.ts`), including `PresetName`, `CreateConfigOptions`, `KaezonPlugin`, and `KaezonRule`.
 
 ## Requirements
 
-- Node.js `^22.13.0 || >=24`
+- Node.js `>=26`
 - ESLint `^10.0.0`
 - TypeScript `>=5` (peer, for the type-aware checks)
 

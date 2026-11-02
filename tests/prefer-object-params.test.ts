@@ -1,7 +1,7 @@
-import rule from '../eslint-rules/prefer-object-params.js'
-import { ts_tester } from './helpers/rule_tester.js'
+import rule_module from '../eslint-rules/prefer-object-params.ts'
+import { as_rule_tester_rule, ts_tester } from './helpers/rule_tester.ts'
 
-ts_tester.run('prefer-object-params', rule, {
+ts_tester.run('prefer-object-params', as_rule_tester_rule(rule_module), {
    invalid: [
       {
          code: 'function f(a, b) {}',

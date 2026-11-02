@@ -11,35 +11,60 @@ const package_root = path.resolve(
    '..',
 )
 
-const package_entries = [
-   'configs',
-   'eslint-rules',
-   'index.js',
-   'index.d.ts',
-   'package.json',
-]
+/**
+ * Only `dist/` is published, so the isolation copies the built package rather
+ * than the sources. `pnpm test` depends on `pnpm build` for that reason.
+ */
+const dist_dir = path.join(package_root, 'dist')
 
 /** `typescript` is a required peer: the rules import it at load time. */
 const required_peers = ['typescript']
 
+interface IsolatedCopyOptions {
+   keep: readonly string[]
+}
+
+interface RunNodeOptions {
+   code: string
+   cwd: string
+}
+
+interface RunNodeResult {
+   code: number
+   stderr: string
+   stdout: string
+}
+
+interface ConfigProbe {
+   configs: string[]
+   plugins: string[]
+   rules: number
+}
+
+interface HouseProbe {
+   name: string
+   plugins: string[]
+}
+
 /**
- * Builds a throwaway copy of the package whose node_modules only contains the
- * packages listed in `keep`. Everything else is missing, so optional peer
+ * Builds a throwaway copy of the built package whose node_modules only contains
+ * the packages listed in `keep`. Everything else is missing, so optional peer
  * plugins cannot resolve. The files are copied (not symlinked) because Node
  * resolves symlinks to their real path, which would find this repo's
  * node_modules and defeat the isolation.
  */
-async function build_isolated_copy({ keep }) {
+async function build_isolated_copy({
+   keep,
+}: IsolatedCopyOptions): Promise<string> {
    const dir = await mkdtemp(path.join(tmpdir(), 'kaezon-isolated-'))
    const modules_dir = path.join(dir, 'node_modules')
 
    await mkdir(modules_dir, { recursive: true })
-
-   for (const entry of package_entries) {
-      await cp(path.join(package_root, entry), path.join(dir, entry), {
-         recursive: true,
-      })
-   }
+   await cp(dist_dir, path.join(dir, 'dist'), { recursive: true })
+   await cp(
+      path.join(package_root, 'package.json'),
+      path.join(dir, 'package.json'),
+   )
 
    for (const package_name of [...required_peers, ...keep]) {
       const target = path.join(modules_dir, package_name)
@@ -54,21 +79,24 @@ async function build_isolated_copy({ keep }) {
    return dir
 }
 
-function run_node({ code, cwd }) {
+function run_node({ code, cwd }: RunNodeOptions): Promise<RunNodeResult> {
    return new Promise(resolve => {
       execFile(
          process.execPath,
          ['--input-type=module', '--eval', code],
          { cwd },
          (error, stdout, stderr) => {
-            resolve({ code: error?.code ?? 0, stderr, stdout })
+            const exit_code = typeof error?.code === 'number' ? error.code : 0
+            resolve({ code: exit_code, stderr, stdout })
          },
       )
    })
 }
 
+const PLUGIN_ENTRY = './dist/index.js'
+
 const peer_error_probe = `
-import kaezon from './index.js'
+import kaezon from '${PLUGIN_ENTRY}'
 
 try {
    void kaezon.configs.nuxt_house
@@ -76,6 +104,24 @@ try {
 } catch (error) {
    console.log('ERROR:' + error.message)
 }
+`
+
+const config_probe = `
+import kaezon from '${PLUGIN_ENTRY}'
+console.log(JSON.stringify({
+   configs: Object.keys(kaezon.configs),
+   plugins: Object.keys(kaezon.configs.nuxt.plugins),
+   rules: Object.keys(kaezon.configs.nuxt.rules).length,
+}))
+`
+
+const house_probe = `
+import kaezon from '${PLUGIN_ENTRY}'
+const config = kaezon.configs.nuxt_house
+console.log(JSON.stringify({
+   name: config.name,
+   plugins: Object.keys(config.plugins),
+}))
 `
 
 describe('nuxt_house without peer plugins', () => {
@@ -97,20 +143,10 @@ describe('nuxt_house without peer plugins', () => {
       const dir = await build_isolated_copy({ keep: [] })
       t.after(() => rm(dir, { force: true, recursive: true }))
 
-      const result = await run_node({
-         code: `
-import kaezon from './index.js'
-console.log(JSON.stringify({
-   configs: Object.keys(kaezon.configs),
-   plugins: Object.keys(kaezon.configs.nuxt.plugins),
-   rules: Object.keys(kaezon.configs.nuxt.rules).length,
-}))
-`,
-         cwd: dir,
-      })
+      const result = await run_node({ code: config_probe, cwd: dir })
 
       assert.equal(result.code, 0, result.stderr)
-      const payload = JSON.parse(result.stdout.trim())
+      const payload = JSON.parse(result.stdout.trim()) as ConfigProbe
       assert.deepEqual(payload.configs, ['nuxt', 'ts', 'vue', 'nuxt_house'])
       assert.deepEqual(payload.plugins, ['kaezon'])
       assert.equal(payload.rules, 7)
@@ -124,20 +160,10 @@ describe('nuxt_house with peer plugins', () => {
       })
       t.after(() => rm(dir, { force: true, recursive: true }))
 
-      const result = await run_node({
-         code: `
-import kaezon from './index.js'
-const config = kaezon.configs.nuxt_house
-console.log(JSON.stringify({
-   name: config.name,
-   plugins: Object.keys(config.plugins),
-}))
-`,
-         cwd: dir,
-      })
+      const result = await run_node({ code: house_probe, cwd: dir })
 
       assert.equal(result.code, 0, result.stderr)
-      const payload = JSON.parse(result.stdout.trim())
+      const payload = JSON.parse(result.stdout.trim()) as HouseProbe
       assert.equal(payload.name, 'kaezon/nuxt_house')
       assert.deepEqual(payload.plugins.sort(), [
          '@typescript-eslint',

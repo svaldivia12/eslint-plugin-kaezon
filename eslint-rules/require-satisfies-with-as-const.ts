@@ -1,3 +1,5 @@
+import type { KaezonRule, TSESTree } from '../types.ts'
+
 /**
  * Require "as const satisfies SomeType" instead of bare "as const".
  * Validates structure at compile time while preserving literal inference.
@@ -5,18 +7,19 @@
  * Report-only; no autofix.
  */
 
-function isBareAsConst(node) {
+function is_bare_as_const(node: TSESTree.TSAsExpression): boolean {
    if (node.type !== 'TSAsExpression') return false
 
-   const type_ref = node.typeAnnotation
+   const { typeAnnotation } = node
    if (
-      type_ref?.type !== 'TSTypeReference' ||
-      type_ref.typeName?.name !== 'const'
+      typeAnnotation.type !== 'TSTypeReference' ||
+      typeAnnotation.typeName.type !== 'Identifier' ||
+      typeAnnotation.typeName.name !== 'const'
    ) {
       return false
    }
 
-   let current = node.parent
+   let current: TSESTree.Node | undefined = node.parent
    while (current) {
       if (current.type === 'TSSatisfiesExpression') return false
       current = current.parent
@@ -25,15 +28,15 @@ function isBareAsConst(node) {
    return true
 }
 
-function isPrimitiveLiteral(node) {
-   return node?.expression?.type === 'Literal'
+function is_primitive_literal(node: TSESTree.TSAsExpression): boolean {
+   return node.expression.type === 'Literal'
 }
 
-export default {
+const rule: KaezonRule<'requireSatisfies'> = {
    create(context) {
-      function visitTSAsExpression(node) {
-         if (!isBareAsConst(node)) return
-         if (isPrimitiveLiteral(node)) return
+      function visit_ts_as_expression(node: TSESTree.TSAsExpression): void {
+         if (!is_bare_as_const(node)) return
+         if (is_primitive_literal(node)) return
 
          context.report({
             messageId: 'requireSatisfies',
@@ -42,7 +45,7 @@ export default {
       }
 
       return {
-         TSAsExpression: visitTSAsExpression,
+         TSAsExpression: visit_ts_as_expression,
       }
    },
    meta: {
@@ -58,3 +61,5 @@ export default {
       type: 'suggestion',
    },
 }
+
+export default rule

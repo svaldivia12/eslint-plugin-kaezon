@@ -1,5 +1,5 @@
-import rule from '../eslint-rules/boolean-is-prefix.js'
-import { ts_tester, ts_type_aware_tester } from './helpers/rule_tester.js'
+import rule_module from '../eslint-rules/boolean-is-prefix.ts'
+import { as_rule_tester_rule, ts_tester, ts_type_aware_tester } from './helpers/rule_tester.ts'
 
 const ref_stubs = `
 type Ref<T> = { value: T }
@@ -9,7 +9,7 @@ declare function ref<T>(value: T): Ref<T>
 declare function shallowRef<T>(value: T): ShallowRef<T>
 `
 
-ts_tester.run('boolean-is-prefix (ast fallback)', rule, {
+ts_tester.run('boolean-is-prefix (ast fallback)', as_rule_tester_rule(rule_module), {
    invalid: [
       {
          code: 'const password_visible: ShallowRef<boolean>',
@@ -75,7 +75,7 @@ ts_tester.run('boolean-is-prefix (ast fallback)', rule, {
    ],
 })
 
-ts_type_aware_tester.run('boolean-is-prefix (type-aware)', rule, {
+ts_type_aware_tester.run('boolean-is-prefix (type-aware)', as_rule_tester_rule(rule_module), {
    invalid: [
       {
          code: `${ref_stubs}

@@ -1,7 +1,7 @@
-import rule from '../eslint-rules/const-case.js'
-import { ts_tester } from './helpers/rule_tester.js'
+import rule_module from '../eslint-rules/const-case.ts'
+import { as_rule_tester_rule, ts_tester } from './helpers/rule_tester.ts'
 
-ts_tester.run('const-case', rule, {
+ts_tester.run('const-case', as_rule_tester_rule(rule_module), {
    invalid: [
       {
          code: 'const foo = 1',

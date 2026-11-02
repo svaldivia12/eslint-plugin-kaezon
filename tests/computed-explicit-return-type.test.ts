@@ -1,7 +1,7 @@
-import rule from '../eslint-rules/computed-explicit-return-type.js'
-import { ts_tester } from './helpers/rule_tester.js'
+import rule_module from '../eslint-rules/computed-explicit-return-type.ts'
+import { as_rule_tester_rule, ts_tester } from './helpers/rule_tester.ts'
 
-ts_tester.run('computed-explicit-return-type', rule, {
+ts_tester.run('computed-explicit-return-type', as_rule_tester_rule(rule_module), {
    invalid: [
       {
          code: 'computed(() => 1)',

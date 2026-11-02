@@ -1,17 +1,20 @@
 /**
  * Compile-time checks for the published type surface. `pnpm typecheck` builds
  * this file with `strict` on; nothing here runs at test time.
+ *
+ * It imports from `dist/`, not from the sources, so it validates what npm
+ * actually ships. Run `pnpm build` first (CI does).
  */
 import assert from 'node:assert/strict'
 import type { Linter } from 'eslint'
-import kaezon from '../../index.js'
+import kaezon from '../../dist/index.js'
 import type {
    CreateConfigOptions,
    FlatConfig,
    KaezonPlugin,
    PresetName,
    RuleConfig,
-} from '../../index.js'
+} from '../../dist/index.js'
 
 const plugin: KaezonPlugin = kaezon
 

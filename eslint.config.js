@@ -1,32 +1,37 @@
 import js from '@eslint/js'
 import globals from 'globals'
-import kaezon from './index.js'
+import ts_parser from '@typescript-eslint/parser'
+import kaezon from './index.ts'
 
 export default [
    {
-      ignores: ['coverage/**', 'node_modules/**'],
+      ignores: ['coverage/**', 'dist/**', 'node_modules/**'],
    },
    js.configs.recommended,
-   kaezon.createConfig({
-      files: ['**/*.js'],
-      preset: 'ts',
-   }),
    {
-      files: ['**/*.js'],
+      files: ['**/*.ts'],
       languageOptions: {
          ecmaVersion: 'latest',
          globals: { ...globals.node, ...globals.es2024 },
+         parser: ts_parser,
          sourceType: 'module',
       },
+   },
+   kaezon.createConfig({
+      files: ['**/*.ts'],
+      preset: 'ts',
+   }),
+   {
+      files: ['**/*.ts'],
       rules: {
          'no-console': 'error',
-         'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+         'no-unused-vars': 'off',
          'sort-imports': ['error', { ignoreDeclarationSort: true }],
          'sort-keys': 'error',
       },
    },
    {
-      files: ['tests/**/*.js'],
+      files: ['tests/**/*.ts'],
       rules: {
          'no-console': 'off',
       },

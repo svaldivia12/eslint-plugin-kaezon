@@ -4,59 +4,87 @@ Thanks for taking the time to contribute.
 
 ## Setup
 
-Requires Node.js `^22.13.0 || >=24` and pnpm 12.
+Requires Node.js `>=26` and pnpm 12.
 
 ```sh
 pnpm install
+pnpm build
 pnpm test
 ```
+
+TypeScript sources run directly on Node 26 (native type stripping), so the test
+suite imports `index.ts` without a build. `pnpm build` is still needed for
+`pnpm check:package`, for the test that imports the built package from `dist/`,
+and before publishing.
 
 ## Scripts
 
 | Script | What it does |
 |---|---|
-| `pnpm test` | Runs the rule and config test suite with `node --test`. |
+| `pnpm build` | Compiles the sources to `dist/` and emits `.d.ts` files. |
+| `pnpm test` | Runs the rule and config test suite with `node --test` against the `.ts` sources. |
 | `pnpm lint` | Lints this repo with its own rules plus ESLint recommended. Must report zero messages. |
-| `pnpm typecheck` | Compiles `tests/types/` against the published `index.d.ts` with `strict` on. |
-| `pnpm check:package` | Runs `publint` and `@arethetypeswrong/cli` over the packed tarball. |
+| `pnpm typecheck` | Type-checks sources, scripts and tests with `strict` on. |
+| `pnpm check:package` | Runs `publint` and `@arethetypeswrong/cli` over the packed tarball. Requires `pnpm build`. |
 
 ## Adding a rule
 
-1. Create `eslint-rules/<rule-name>.js` with a default export following the ESLint rule shape:
+1. Create `eslint-rules/<rule-name>.ts` with a default export typed as a `KaezonRule`:
 
-   ```js
-   export default {
+   ```ts
+   import type { KaezonRule, TSESTree } from '../types.ts'
+
+   const rule: KaezonRule<'someMessageId'> = {
       create(context) {
-         return { /* visitors */ }
+         function visit(node: TSESTree.VariableDeclarator): void {
+            context.report({ messageId: 'someMessageId', node })
+         }
+         return { VariableDeclarator: visit }
       },
       meta: {
          docs: { description: '...' },
-         messages: { someId: '...' },
+         messages: { someMessageId: '...' },
          schema: [],
          type: 'suggestion',
       },
    }
+
+   export default rule
    ```
 
-   Use snake_case for local variables and functions, UPPER_CASE for literal constants, and a single object parameter when a function takes more than one argument. The repo lints itself with these rules.
+   `KaezonRule` is `TSESLint.RuleModule`, so each visitor receives its concrete
+   `TSESTree` node and `context.report` only accepts the `messageId`s declared in
+   `meta.messages`. A typo in either is a compile error.
 
-2. Register it in `eslint-rules/index.js`.
+   Use snake_case for local variables and functions, UPPER_CASE for literal
+   constants, and a single object parameter when a function takes more than one
+   argument. The repo lints itself with these rules.
 
-3. Add the rule name to `ts_rules`, `vue_rules`, or `parser_rules` in `configs/create_config.js`. If it should be on in `nuxt`, make sure the preset list picks it up.
+2. Register it in `eslint-rules/index.ts`.
 
-4. Add `tests/<rule-name>.test.js` using `RuleTester` through the helpers in `tests/helpers/rule_tester.js`. Mark each case with `name:` so failures are readable.
+3. Add the rule name to `ts_rules`, `vue_rules`, or `parser_rules` in `configs/create_config.ts`. If it should be on in `nuxt`, make sure the preset list picks it up.
+
+4. Add `tests/<rule-name>.test.ts` using `RuleTester` through the helpers in `tests/helpers/rule_tester.ts`. Wrap the rule with `as_rule_tester_rule(...)`: RuleTester is typed against the core ESLint `RuleModule`, which is structurally different from `TSESLint.RuleModule`. Mark each case with `name:` so failures are readable.
 
 5. Update the rules table in `README.md` and add an entry under `## [Unreleased]` in `CHANGELOG.md`.
 
-6. Run `pnpm lint && pnpm test && pnpm typecheck`.
+6. Run `pnpm build && pnpm lint && pnpm test && pnpm typecheck`.
 
 ## Rules that need type information
 
-Set `meta.docs.requiresTypeChecking = true` and fall back to an AST-only check when `context.sourceCode.parserServices.program` is missing. `boolean-is-prefix` is the reference implementation.
+Read `context.sourceCode.parserServices` and fall back to an AST-only check when `parserServices.program` is missing. `boolean-is-prefix` is the reference implementation.
 
 ## Rules that need third-party plugins
 
-Do not import `@typescript-eslint/*` or `vue/*` rules from a preset that must work without extra installs. House-style rules belong in `nuxt_house_rules` in `configs/create_config.js`.
+Do not import `@typescript-eslint/*` or `vue/*` rules from a preset that must work without extra installs. House-style rules belong in `nuxt_house_rules` in `configs/create_config.ts`.
+
+## Typing the plugin surface
+
+`TSESLint.RuleModule` and ESLint's `RuleModule` describe the same runtime
+contract with different `RuleContext` types, so they are not assignable to each
+other. The single `as unknown as` cast lives in `to_plugin_rules` in `types.ts`.
+Do not add casts elsewhere; if you hit an assignability error at a boundary, put
+it there.
 
 ## Commits and pull requests
 
@@ -67,6 +95,6 @@ Do not import `@typescript-eslint/*` or `vue/*` rules from a preset that must wo
 ## Releasing
 
 1. Bump `version` in `package.json` and move the `## [Unreleased]` entries in `CHANGELOG.md` under the new version heading.
-2. Run `pnpm lint && pnpm test && pnpm typecheck && pnpm check:package`.
+2. Run `pnpm build && pnpm lint && pnpm test && pnpm typecheck && pnpm check:package`.
 3. Commit, tag with `git tag -a v<version> -m "v<version>"`, and push the tag.
-4. The release workflow publishes to npm with provenance and creates the GitHub release from `CHANGELOG.md`.
+4. The release workflow builds, publishes to npm with provenance, and creates the GitHub release from `CHANGELOG.md`.

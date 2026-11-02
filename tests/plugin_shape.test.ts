@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import kaezon from '../index.js'
+import kaezon from '../index.ts'
 
 const rule_ids = [
    'kaezon/boolean-is-prefix',

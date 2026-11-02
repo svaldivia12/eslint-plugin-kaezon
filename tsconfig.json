@@ -1,22 +1,25 @@
 {
    "compilerOptions": {
-      "allowJs": false,
-      "checkJs": false,
-      "exactOptionalPropertyTypes": true,
+      "allowImportingTsExtensions": true,
+      "declaration": true,
+      "declarationMap": true,
+      "erasableSyntaxOnly": true,
       "forceConsistentCasingInFileNames": true,
       "module": "nodenext",
       "moduleResolution": "nodenext",
-      "noEmit": true,
       "noFallthroughCasesInSwitch": true,
       "noImplicitOverride": true,
       "noUncheckedIndexedAccess": true,
       "noUnusedLocals": true,
       "noUnusedParameters": true,
-      "resolveJsonModule": true,
-      "skipLibCheck": false,
+      "outDir": "dist",
+      "rewriteRelativeImportExtensions": true,
+      "rootDir": ".",
+      "skipLibCheck": true,
       "strict": true,
       "target": "es2022",
-      "types": ["node"]
+      "types": ["node"],
+      "verbatimModuleSyntax": true
    },
-   "include": ["tests/types/**/*.ts"]
+   "include": ["index.ts", "configs/**/*.ts", "eslint-rules/**/*.ts"]
 }

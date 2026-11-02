@@ -1,7 +1,7 @@
-import rule from '../eslint-rules/require-satisfies-with-as-const.js'
-import { ts_tester } from './helpers/rule_tester.js'
+import rule_module from '../eslint-rules/require-satisfies-with-as-const.ts'
+import { as_rule_tester_rule, ts_tester } from './helpers/rule_tester.ts'
 
-ts_tester.run('require-satisfies-with-as-const', rule, {
+ts_tester.run('require-satisfies-with-as-const', as_rule_tester_rule(rule_module), {
    invalid: [
       {
          code: 'const x = { a: 1 } as const',

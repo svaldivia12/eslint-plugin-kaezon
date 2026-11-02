@@ -1,7 +1,7 @@
-import rule from '../eslint-rules/vue-prop-name-casing-by-type.js'
-import { ts_tester, vue_tester } from './helpers/rule_tester.js'
+import rule_module from '../eslint-rules/vue-prop-name-casing-by-type.ts'
+import { as_rule_tester_rule, ts_tester, vue_tester } from './helpers/rule_tester.ts'
 
-ts_tester.run('vue-prop-name-casing-by-type', rule, {
+ts_tester.run('vue-prop-name-casing-by-type', as_rule_tester_rule(rule_module), {
    invalid: [
       {
          code: 'defineProps<{ fooBar: string }>()',
@@ -102,7 +102,7 @@ ts_tester.run('vue-prop-name-casing-by-type', rule, {
    ],
 })
 
-vue_tester.run('vue-prop-name-casing-by-type in SFC', rule, {
+vue_tester.run('vue-prop-name-casing-by-type in SFC', as_rule_tester_rule(rule_module), {
    invalid: [
       {
          code: '<script setup lang="ts">defineProps<{ fooBar: string }>()</script>',
