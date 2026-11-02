@@ -17,10 +17,10 @@
       "eslint-rules/**",
       "README.md"
    ],
-   "packageManager": "pnpm@11.23.0",
+   "packageManager": "pnpm@12.16.1",
    "engines": {
       "node": ">=26",
-      "pnpm": ">=11"
+      "pnpm": ">=12"
    },
    "peerDependencies": {
       "eslint": "^10.0.0",
