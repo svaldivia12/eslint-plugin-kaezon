@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-02
+
 ### Added
 
 - `kaezon/vue-prop-name-casing-by-type` now autofixes prop names, keeping the original quote style for string-literal keys.
@@ -48,5 +50,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `configs.nuxt_house` requires `eslint-plugin-vue` and `@typescript-eslint/eslint-plugin`.
 - The plugin ships no parser. Use `@typescript-eslint/parser` and `vue-eslint-parser` in the consuming project.
 
-[Unreleased]: https://github.com/svaldivia12/eslint-plugin-kaezon/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/svaldivia12/eslint-plugin-kaezon/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/svaldivia12/eslint-plugin-kaezon/releases/tag/v1.1.0
 [1.0.0]: https://github.com/svaldivia12/eslint-plugin-kaezon/releases/tag/v1.0.0

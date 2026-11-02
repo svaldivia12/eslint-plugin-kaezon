@@ -28,6 +28,9 @@ jobs:
       # Trusted publishing (OIDC) needs npm >= 11.5.1 and needs no NPM_TOKEN.
       - run: npm install --global npm@latest
       - run: pnpm install --frozen-lockfile
+      # Fail before publishing if the CHANGELOG has no section for this tag,
+      # instead of publishing the package and then breaking the GitHub release.
+      - run: node scripts/release_notes.ts "${GITHUB_REF_NAME#v}" --check
       - run: pnpm run build
       - run: pnpm run check:package
       - run: npm publish --access public --provenance
