@@ -1,8 +1,11 @@
+import { createRequire } from 'node:module'
 import rules_module from '../eslint-rules/index.js'
 
 const PLUGIN_PREFIX = 'kaezon/'
 
-export const DEFAULT_FILES = [
+const require_module = createRequire(import.meta.url)
+
+export const default_files = [
    '**/*.ts',
    '**/*.tsx',
    '**/*.mts',
@@ -10,21 +13,26 @@ export const DEFAULT_FILES = [
    '**/*.vue',
 ]
 
-export const TS_RULES = [
+export const ts_rules = [
    'const-case',
    'prefer-object-params',
    'require-satisfies-with-as-const',
 ]
 
-export const VUE_RULES = [
+export const vue_rules = [
    'boolean-is-prefix',
    'computed-explicit-return-type',
    'vue-prop-name-casing-by-type',
 ]
 
-export const PARSER_RULES = ['require-typescript-parser']
+export const parser_rules = ['require-typescript-parser']
 
-export const NUXT_HOUSE_RULES = {
+/**
+ * House style for the nuxt_house preset. These rules belong to third-party
+ * plugins (eslint-plugin-vue, @typescript-eslint/eslint-plugin), so the preset
+ * only works when the consuming project installs them.
+ */
+export const nuxt_house_rules = {
    '@typescript-eslint/explicit-function-return-type': [
       'error',
       { allowTypedFunctionExpressions: false },
@@ -70,22 +78,54 @@ export const NUXT_HOUSE_RULES = {
    'vue/prop-name-casing': 'off',
 }
 
-const VALID_SHORT_NAMES = Object.keys(rules_module.rules)
-
-const VALID_SHORT_NAME_SET = new Set(VALID_SHORT_NAMES)
-
-const PRESET_RULES = {
-   none: [],
-   nuxt: [...PARSER_RULES, ...TS_RULES, ...VUE_RULES],
-   ts: [...PARSER_RULES, ...TS_RULES],
-   vue: [...PARSER_RULES, ...VUE_RULES],
+const peer_plugins = {
+   '@typescript-eslint': '@typescript-eslint/eslint-plugin',
+   vue: 'eslint-plugin-vue',
 }
 
-const PRESET_CONFIG_NAMES = {
+const valid_short_names = Object.keys(rules_module.rules)
+
+const valid_short_name_set = new Set(valid_short_names)
+
+const preset_rules = {
+   none: [],
+   nuxt: [...parser_rules, ...ts_rules, ...vue_rules],
+   nuxt_house: [...parser_rules, ...ts_rules, ...vue_rules],
+   ts: [...parser_rules, ...ts_rules],
+   vue: [...parser_rules, ...vue_rules],
+}
+
+const preset_config_names = {
    none: 'kaezon/custom',
    nuxt: 'kaezon/nuxt',
+   nuxt_house: 'kaezon/nuxt_house',
    ts: 'kaezon/ts',
    vue: 'kaezon/vue',
+}
+
+const preset_names = Object.keys(preset_rules)
+
+function load_peer_plugins() {
+   const plugins = {}
+   const missing = []
+
+   for (const [plugin_id, package_name] of Object.entries(peer_plugins)) {
+      try {
+         plugins[plugin_id] = require_module(package_name)
+      } catch {
+         missing.push(package_name)
+      }
+   }
+
+   if (missing.length > 0) {
+      throw new Error(
+         `The "nuxt_house" preset needs these plugins installed in your project: ${missing.join(', ')}. ` +
+            'Add them as devDependencies, or use the "nuxt" preset for the kaezon rules alone. ' +
+            'This plugin does not ship third-party rules.',
+      )
+   }
+
+   return plugins
 }
 
 function to_error_rules(short_names) {
@@ -100,23 +140,23 @@ function to_overlay_rule_id(key) {
    if (key.startsWith(PLUGIN_PREFIX)) {
       const short_name = key.slice(PLUGIN_PREFIX.length)
 
-      if (!VALID_SHORT_NAME_SET.has(short_name)) {
+      if (!valid_short_name_set.has(short_name)) {
          throw new Error(
-            `Unknown kaezon rule "${key}". Valid names: ${VALID_SHORT_NAMES.join(', ')}`,
+            `Unknown kaezon rule "${key}". Valid names: ${valid_short_names.join(', ')}`,
          )
       }
 
       return key
    }
 
-   if (VALID_SHORT_NAME_SET.has(key)) {
+   if (valid_short_name_set.has(key)) {
       return `${PLUGIN_PREFIX}${key}`
    }
 
    return key
 }
 
-function overlay_rules(base_rules, overlay) {
+function overlay_rules({ base_rules, overlay }) {
    const rules = { ...base_rules }
 
    for (const [key, value] of Object.entries(overlay)) {
@@ -126,28 +166,34 @@ function overlay_rules(base_rules, overlay) {
    return rules
 }
 
-export function create_config(plugin, options = {}) {
-   const preset = options.preset ?? 'nuxt'
-
-   if (!(preset in PRESET_RULES)) {
+function resolve_preset(preset) {
+   if (!Object.hasOwn(preset_rules, preset)) {
       throw new Error(
-         `Unknown preset "${preset}". Valid presets: nuxt, none, ts, vue`,
+         `Unknown preset "${preset}". Valid presets: ${preset_names.join(', ')}`,
       )
    }
 
-   const files = options.files === undefined ? DEFAULT_FILES : options.files
+   return preset
+}
+
+export function create_config({ options = {}, plugin }) {
+   const preset = resolve_preset(options.preset ?? 'nuxt')
+   const files = options.files === undefined ? default_files : options.files
    const overlay = options.rules ?? {}
+   const is_house = preset === 'nuxt_house'
 
    return {
       files,
-      name: PRESET_CONFIG_NAMES[preset],
-      plugins: { kaezon: plugin },
-      rules: overlay_rules(
-         {
-            ...to_error_rules(PRESET_RULES[preset]),
-            ...(preset === 'nuxt' ? NUXT_HOUSE_RULES : {}),
+      name: preset_config_names[preset],
+      plugins: is_house
+         ? { ...load_peer_plugins(), kaezon: plugin }
+         : { kaezon: plugin },
+      rules: overlay_rules({
+         base_rules: {
+            ...to_error_rules(preset_rules[preset]),
+            ...(is_house ? nuxt_house_rules : {}),
          },
          overlay,
-      ),
+      }),
    }
 }

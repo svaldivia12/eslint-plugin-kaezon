@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 import kaezon from '../index.js'
 
-const CUSTOM_NUXT_RULES = [
+const custom_nuxt_rules = [
    'kaezon/require-typescript-parser',
    'kaezon/const-case',
    'kaezon/prefer-object-params',
@@ -12,12 +12,42 @@ const CUSTOM_NUXT_RULES = [
    'kaezon/vue-prop-name-casing-by-type',
 ]
 
+const house_rule_ids = [
+   '@typescript-eslint/explicit-function-return-type',
+   '@typescript-eslint/naming-convention',
+   'curly',
+   'no-restricted-syntax',
+   'vue/prop-name-casing',
+]
+
 function assert_nuxt_config(config) {
    assert.equal(config.name, 'kaezon/nuxt')
    assert.equal(config.plugins.kaezon, kaezon)
    assert.deepEqual(Object.keys(config.plugins), ['kaezon'])
 
-   for (const rule_id of CUSTOM_NUXT_RULES) {
+   for (const rule_id of custom_nuxt_rules) {
+      assert.equal(config.rules[rule_id], 'error')
+   }
+
+   for (const rule_id of house_rule_ids) {
+      assert.equal(
+         config.rules[rule_id],
+         undefined,
+         `${rule_id} belongs to nuxt_house, not nuxt`,
+      )
+   }
+}
+
+function assert_nuxt_house_config(config) {
+   assert.equal(config.name, 'kaezon/nuxt_house')
+   assert.equal(config.plugins.kaezon, kaezon)
+   assert.deepEqual(Object.keys(config.plugins).sort(), [
+      '@typescript-eslint',
+      'kaezon',
+      'vue',
+   ])
+
+   for (const rule_id of custom_nuxt_rules) {
       assert.equal(config.rules[rule_id], 'error')
    }
 
@@ -46,6 +76,28 @@ describe('createConfig', () => {
       assert_nuxt_config(kaezon.createConfig({ preset: 'nuxt' }))
    })
 
+   it('builds nuxt_house as a lazy getter', () => {
+      const descriptor = Object.getOwnPropertyDescriptor(
+         kaezon.configs,
+         'nuxt_house',
+      )
+
+      assert.ok(descriptor, 'nuxt_house must be defined on configs')
+      assert.equal(typeof descriptor.get, 'function')
+      assert_nuxt_house_config(kaezon.configs.nuxt_house)
+   })
+
+   it('does not put third-party rules in the nuxt preset', () => {
+      const config = kaezon.configs.nuxt
+
+      for (const key of Object.keys(config.rules)) {
+         assert.ok(
+            key.startsWith('kaezon/'),
+            `unexpected non-kaezon rule in nuxt preset: ${key}`,
+         )
+      }
+   })
+
    it('enables the diagnostic rule on ts and vue presets', () => {
       assert.equal(
          kaezon.configs.ts.rules['kaezon/require-typescript-parser'],
@@ -64,7 +116,10 @@ describe('createConfig', () => {
          kaezon.configs.vue.rules['kaezon/boolean-is-prefix'],
          'error',
       )
-      assert.equal(kaezon.configs.ts.rules['kaezon/computed-explicit-return-type'], undefined)
+      assert.equal(
+         kaezon.configs.ts.rules['kaezon/computed-explicit-return-type'],
+         undefined,
+      )
       assert.equal(kaezon.configs.ts.rules['kaezon/boolean-is-prefix'], undefined)
       assert.equal(kaezon.configs.vue.rules['kaezon/const-case'], undefined)
       assert.equal(kaezon.configs.ts.rules.curly, undefined)
@@ -88,8 +143,8 @@ describe('createConfig', () => {
       const config = kaezon.createConfig({
          preset: 'nuxt',
          rules: {
-            'prefer-object-params': 'off',
             'kaezon/const-case': 'warn',
+            'prefer-object-params': 'off',
          },
       })
       assert.equal(config.rules['kaezon/prefer-object-params'], 'off')
@@ -117,11 +172,18 @@ describe('createConfig', () => {
    it('throws on an unknown preset', () => {
       assert.throws(
          () => kaezon.createConfig({ preset: 'nope' }),
-         /Unknown preset "nope".*nuxt, none, ts, vue/,
+         /Unknown preset "nope"/,
       )
       assert.throws(
          () => kaezon.createConfig({ preset: 'all' }),
          /Unknown preset "all"/,
+      )
+   })
+
+   it('lists the valid presets in the error message', () => {
+      assert.throws(
+         () => kaezon.createConfig({ preset: 'nope' }),
+         /Valid presets: none, nuxt, nuxt_house, ts, vue/,
       )
    })
 
