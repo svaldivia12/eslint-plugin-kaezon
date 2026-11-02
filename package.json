@@ -73,17 +73,9 @@
       "prepare": "husky",
       "typecheck": "pnpm run build && tsc --project tsconfig.test.json",
       "test": "node --test tests/**/*.test.ts",
+      "test:examples": "node scripts/check_examples.ts",
       "check:package": "publint && attw --pack . --profile esm-only",
-      "prepublishOnly": "pnpm run build && pnpm run lint && pnpm run test && pnpm run typecheck"
-   },
-   "lint-staged": {
-      "*.{js,ts}": [
-         "eslint --fix",
-         "prettier --write"
-      ],
-      "*.{json,md,yml,yaml}": [
-         "prettier --write"
-      ]
+      "prepublishOnly": "pnpm run format:check && pnpm run build && pnpm run lint && pnpm run test && pnpm run typecheck"
    },
    "devDependencies": {
       "@arethetypeswrong/cli": "^0.18.5",

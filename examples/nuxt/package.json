@@ -9,7 +9,7 @@
       "@typescript-eslint/eslint-plugin": "^8.72.1",
       "@typescript-eslint/parser": "^8.72.1",
       "eslint": "^10.14.0",
-      "eslint-plugin-kaezon": "^1.1.0",
+      "eslint-plugin-kaezon": "workspace:*",
       "eslint-plugin-vue": "^10.12.0",
       "typescript": "~6.0.3"
    }

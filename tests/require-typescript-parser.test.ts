@@ -119,6 +119,19 @@ it('require-typescript-parser with Vue parser', () => {
             },
             name: '.vue with parser.ts map',
          },
+         {
+            code: VUE_SFC,
+            filename: 'a.vue',
+            languageOptions: {
+               parser: vue_parser,
+               parserOptions: {
+                  extraFileExtensions: ['.vue'],
+                  parser: ts_parser,
+               },
+               sourceType: 'module',
+            },
+            name: '.vue with a TypeScript parser instance, not a name',
+         },
       ],
    })
 })
@@ -167,7 +180,12 @@ const rejected_parser_options = [
    { name: 'parser as an unrelated string', parser: 'some-other-parser' },
    { name: 'parser as a number', parser: 42 },
    { name: 'parser as null', parser: null },
-   { name: 'parser as an object without a recognisable name', parser: { meta: {} } },
+   {
+      name: 'parser as an object without a recognisable name',
+      parser: { meta: {} },
+   },
+   { name: 'parser as a boolean', parser: true },
+   { name: 'parser as an object with no meta at all', parser: { some: 'thing' } },
 ]
 
 it('require-typescript-parser rejects parser shapes with no TypeScript', () => {

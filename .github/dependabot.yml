@@ -20,6 +20,12 @@ updates:
               - typescript
               - publint
               - '@arethetypeswrong/*'
+              - prettier
+              - prettier-*
+              - husky
+              - lint-staged
+              - '@commitlint/*'
+              - eslint-config-prettier
      ignore:
         # typescript 7 no longer ships the compiler API (TypeChecker, Type,
         # TypeFlags...). eslint-rules/boolean-is-prefix.ts imports it for the

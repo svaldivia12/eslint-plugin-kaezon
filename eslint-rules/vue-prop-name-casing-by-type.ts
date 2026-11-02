@@ -28,7 +28,11 @@ function extract_define_props_call(node: TSESTree.CallExpression): TSESTree.Call
 
 function get_prop_name(node: TSESTree.TSPropertySignature): string | null {
    if (node.key.type === 'Identifier') return node.key.name
-   if (node.key.type === 'Literal') return String(node.key.value)
+   // A numeric or symbol literal key cannot be camelCase or snake_case, and
+   // renaming it would change the prop name the consumer must pass, so skip it.
+   if (node.key.type === 'Literal' && typeof node.key.value === 'string') {
+      return node.key.value
+   }
    return null
 }
 

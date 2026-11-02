@@ -4,8 +4,8 @@
 declare function defineProps<T>(): T
 
 const props = defineProps<{
-   on_click: () => void
-   totalRecords: number
+   onClick: () => void
+   total_records: number
 }>()
 
 export function build() {

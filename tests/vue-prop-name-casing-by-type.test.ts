@@ -114,6 +114,18 @@ it('vue-prop-name-casing-by-type', () => {
          },
          { code: 'other<{ fooBar: string }>()', name: 'unrelated call' },
          { code: 'defineProps()', name: 'no type arguments' },
+         {
+            code: 'defineProps<{ [key: string]: string }>()',
+            name: 'index signature is not a property signature',
+         },
+         {
+            code: 'defineProps<{ method(): void }>()',
+            name: 'method signature has no key type we can name',
+         },
+         {
+            code: 'defineProps<{ 42: string }>()',
+            name: 'numeric key is not an identifier or string literal',
+         },
       ],
    })
 })

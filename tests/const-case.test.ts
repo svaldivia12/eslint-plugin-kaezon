@@ -60,6 +60,12 @@ it('const-case', () => {
             output: 'const FOO_BAR = 1\nconst total = FOO_BAR + 1',
          },
          {
+            code: 'for (const foo = 0; foo < 1; foo++) {}',
+            errors: [{ messageId: 'upperCase' }],
+            name: 'loop variable is renamed in every reference',
+            output: 'for (const FOO = 0; FOO < 1; FOO++) {}',
+         },
+         {
             code: 'const Foo = 1',
             errors: [{ messageId: 'upperCase' }],
             name: 'non-conventional casing is normalised by the fix',

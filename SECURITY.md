@@ -28,3 +28,17 @@ This plugin runs inside the consumer's ESLint process, so rule implementations m
 - Make network requests.
 
 `nuxt_house` loads `eslint-plugin-vue` and `@typescript-eslint/eslint-plugin` from the consuming project by design. Vulnerabilities in those packages should be reported to their maintainers.
+
+## Known advisories in development dependencies
+
+`pnpm audit` reports one moderate advisory, [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249) (minimatch denial of service via globparts amplification).
+
+It reaches the tree only through devDependencies: `eslint` depends on
+`@eslint/config-array`, which depends on `minimatch ^10.2.4`. The published
+package declares no runtime dependencies, so no consumer inherits it.
+
+It cannot be fixed from this repository. The advisory is patched in
+`minimatch >= 11.0.1`, while ESLint 10 requires the 10.x line, and no patched
+10.x release exists. Overrides that force 11 leave the 10.2.6 copy in place
+because `^10.2.4` cannot be satisfied by a major bump. This will clear when
+ESLint moves to a major that allows minimatch 11.

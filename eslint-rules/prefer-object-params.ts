@@ -23,10 +23,17 @@ function is_computed_getter(node: TSESTree.Node): boolean {
    return callee.type === 'Identifier' && callee.name === 'computed'
 }
 
+/**
+ * A function whose signature is dictated by something other than its body: an
+ * object property, a class method, or a callback passed to a call. Changing
+ * their parameters would change a public API or break the caller.
+ */
 function is_external_callback(node: TSESTree.Node): boolean {
    const { parent } = node
    if (!parent) return false
    if (parent.type === 'Property') return true
+   if (parent.type === 'MethodDefinition') return true
+   if (parent.type === 'PropertyDefinition') return true
    if (parent.type === 'CallExpression') return true
    return false
 }

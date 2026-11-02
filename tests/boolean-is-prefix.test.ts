@@ -74,6 +74,22 @@ it('boolean-is-prefix (ast fallback)', () => {
             code: 'const flag = shallowRef(some_flag)',
             name: 'shallowRef non-literal without annotation',
          },
+         {
+            code: 'const flag: SomeNamespace.Ref<boolean> = x',
+            name: 'qualified type name is not recognised as Ref',
+         },
+         {
+            code: "const flag: Ref<'yes'> = x",
+            name: 'Ref of a non-boolean literal type',
+         },
+         {
+            code: 'const flag: Ref = x',
+            name: 'Ref without type arguments',
+         },
+         {
+            code: 'const flag: Ref<boolean[]> = x',
+            name: 'Ref of an array type, not a bare boolean',
+         },
       ],
    })
 })

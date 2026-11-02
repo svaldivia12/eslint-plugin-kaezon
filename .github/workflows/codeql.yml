@@ -1,0 +1,35 @@
+name: CodeQL
+
+on:
+   push:
+      branches: [main]
+   pull_request:
+   schedule:
+      # Weekly, so a new advisory against existing code still surfaces.
+      - cron: '0 6 * * 1'
+
+permissions:
+   contents: read
+
+concurrency:
+   group: codeql-${{ github.ref }}
+   cancel-in-progress: true
+
+jobs:
+   analyze:
+      name: Analyze
+      runs-on: ubuntu-latest
+      permissions:
+         contents: read
+         security-events: write
+      steps:
+         - uses: actions/checkout@v7
+         - uses: github/codeql-action/init@v4
+           with:
+              # The published package is compiled JavaScript, so scanning the
+              # TypeScript sources covers exactly what consumers run.
+              languages: javascript-typescript
+              build-mode: none
+         - uses: github/codeql-action/analyze@v4
+           with:
+              category: '/language:javascript-typescript'
