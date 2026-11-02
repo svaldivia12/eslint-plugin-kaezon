@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-11-02
+
+### Fixed
+
+- `kaezon/prefer-object-params` no longer reports class methods or class property functions. Their parameter list belongs to the class, not to the body, so asking for a single object parameter would change a public API.
+- `kaezon/vue-prop-name-casing-by-type` no longer reports numeric or symbol keys. `defineProps<{ 42: string }>()` was told to use snake_case, which cannot apply to a key that has no name to case.
+
 ## [1.1.0] - 2026-11-02
 
 ### Added
@@ -50,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `configs.nuxt_house` requires `eslint-plugin-vue` and `@typescript-eslint/eslint-plugin`.
 - The plugin ships no parser. Use `@typescript-eslint/parser` and `vue-eslint-parser` in the consuming project.
 
-[Unreleased]: https://github.com/svaldivia12/eslint-plugin-kaezon/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/svaldivia12/eslint-plugin-kaezon/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/svaldivia12/eslint-plugin-kaezon/releases/tag/v1.1.1
 [1.1.0]: https://github.com/svaldivia12/eslint-plugin-kaezon/releases/tag/v1.1.0
 [1.0.0]: https://github.com/svaldivia12/eslint-plugin-kaezon/releases/tag/v1.0.0
