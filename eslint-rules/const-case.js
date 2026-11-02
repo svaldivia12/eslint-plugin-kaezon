@@ -1,7 +1,7 @@
 const UPPER_CASE_REGEX = /^[A-Z][A-Z0-9_]*$/
 const SPECIAL_CHAR_REGEX = /^[$_]$/
 
-function hasAsConst(init) {
+function has_as_const(init) {
    if (!init) return false
 
    let expr = init
@@ -15,7 +15,7 @@ function hasAsConst(init) {
    )
 }
 
-function isLiteral(init) {
+function is_literal(init) {
    return (
       init?.type === 'Literal' ||
       (init?.type === 'UnaryExpression' &&
@@ -24,7 +24,7 @@ function isLiteral(init) {
    )
 }
 
-function isRequireCall(init) {
+function is_require_call(init) {
    return (
       init?.type === 'CallExpression' &&
       init.callee?.type === 'Identifier' &&
@@ -32,47 +32,47 @@ function isRequireCall(init) {
    )
 }
 
-function isSpecialName(name) {
+function is_special_name(name) {
    return SPECIAL_CHAR_REGEX.test(name)
 }
 
-function shouldRequireLowerCase(kind, name, init) {
+function should_require_lower_case({ init, kind, name }) {
    if (
       !UPPER_CASE_REGEX.test(name) ||
-      isRequireCall(init) ||
-      hasAsConst(init)
+      is_require_call(init) ||
+      has_as_const(init)
    ) {
       return false
    }
 
-   return kind === 'let' || (kind === 'const' && !isLiteral(init))
+   return kind === 'let' || (kind === 'const' && !is_literal(init))
 }
 
-function shouldRequireUpperCase(kind, name, init) {
+function should_require_upper_case({ init, kind, name }) {
    return (
       kind === 'const' &&
       !UPPER_CASE_REGEX.test(name) &&
-      (isLiteral(init) || hasAsConst(init))
+      (is_literal(init) || has_as_const(init))
    )
 }
 
 export default {
    create(context) {
-      function reportLowerCase(node) {
+      function report_lower_case(node) {
          context.report({
             messageId: 'lowerCase',
             node,
          })
       }
 
-      function reportUpperCase(node) {
+      function report_upper_case(node) {
          context.report({
             messageId: 'upperCase',
             node,
          })
       }
 
-      function visitVariableDeclaration(node) {
+      function visit_variable_declaration(node) {
          for (const declaration of node.declarations) {
             if (declaration.id?.type !== 'Identifier') continue
 
@@ -80,20 +80,20 @@ export default {
             const { kind } = node
             const { name } = declaration.id
 
-            if (isSpecialName(name)) continue
+            if (is_special_name(name)) continue
 
-            if (shouldRequireUpperCase(kind, name, init)) {
-               reportUpperCase(declaration.id)
+            if (should_require_upper_case({ init, kind, name })) {
+               report_upper_case(declaration.id)
             }
 
-            if (shouldRequireLowerCase(kind, name, init)) {
-               reportLowerCase(declaration.id)
+            if (should_require_lower_case({ init, kind, name })) {
+               report_lower_case(declaration.id)
             }
          }
       }
 
       return {
-         VariableDeclaration: visitVariableDeclaration,
+         VariableDeclaration: visit_variable_declaration,
       }
    },
    meta: {

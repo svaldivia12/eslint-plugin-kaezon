@@ -1,7 +1,7 @@
 import rule from '../eslint-rules/boolean-is-prefix.js'
 import { ts_tester, ts_type_aware_tester } from './helpers/rule_tester.js'
 
-const REF_STUBS = `
+const ref_stubs = `
 type Ref<T> = { value: T }
 type ShallowRef<T> = { value: T }
 type ComputedRef<T> = { value: T }
@@ -78,7 +78,7 @@ ts_tester.run('boolean-is-prefix (ast fallback)', rule, {
 ts_type_aware_tester.run('boolean-is-prefix (type-aware)', rule, {
    invalid: [
       {
-         code: `${REF_STUBS}
+         code: `${ref_stubs}
 declare const is_some_flag: boolean
 const password_visible = shallowRef(is_some_flag)
 `,
@@ -86,7 +86,7 @@ const password_visible = shallowRef(is_some_flag)
          name: 'inferred ShallowRef boolean',
       },
       {
-         code: `${REF_STUBS}
+         code: `${ref_stubs}
 const password_visible = ref(get_flag())
 declare function get_flag(): boolean
 `,
@@ -102,7 +102,7 @@ declare function get_flag(): boolean
          name: 'inferred plain boolean',
       },
       {
-         code: `${REF_STUBS}
+         code: `${ref_stubs}
 function f(password_visible: Ref<boolean>) {}
 `,
          errors: [{ messageId: 'missingIsPrefix' }],
@@ -111,7 +111,7 @@ function f(password_visible: Ref<boolean>) {}
    ],
    valid: [
       {
-         code: `${REF_STUBS}
+         code: `${ref_stubs}
 declare const is_some_flag: boolean
 const is_password_visible = shallowRef(is_some_flag)
 `,
@@ -125,7 +125,7 @@ declare function get_flag(): boolean
          name: 'prefixed inferred plain boolean',
       },
       {
-         code: `${REF_STUBS}
+         code: `${ref_stubs}
 const count = ref(get_count())
 declare function get_count(): number
 `,

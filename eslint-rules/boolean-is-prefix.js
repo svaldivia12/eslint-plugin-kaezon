@@ -1,7 +1,7 @@
 import ts from 'typescript'
 
-const BOOLEAN_REF_NAMES = new Set(['Ref', 'ShallowRef', 'ComputedRef'])
-const BOOLEAN_REF_CALLS = new Set(['ref', 'shallowRef'])
+const boolean_ref_names = new Set(['Ref', 'ShallowRef', 'ComputedRef'])
+const boolean_ref_calls = new Set(['ref', 'shallowRef'])
 
 function get_parser_type_services(context) {
    const services = context.sourceCode.parserServices
@@ -12,7 +12,7 @@ function get_parser_type_services(context) {
    }
 }
 
-function get_node_type(type_services, node) {
+function get_node_type({ node, type_services }) {
    const ts_node = type_services.map.get(node)
    if (!ts_node) return null
    return type_services.checker.getTypeAtLocation(ts_node)
@@ -27,21 +27,21 @@ function get_type_symbol_name(type) {
    return symbol?.getName() ?? null
 }
 
-function get_type_arguments(type, checker) {
+function get_type_arguments({ checker, type }) {
    if (type.aliasTypeArguments?.length) return type.aliasTypeArguments
    if (type.target) return checker.getTypeArguments(type)
    return []
 }
 
-function is_boolean_ref_checker_type(type, checker) {
-   if (!BOOLEAN_REF_NAMES.has(get_type_symbol_name(type))) return false
-   const inner = get_type_arguments(type, checker)[0]
+function is_boolean_ref_checker_type({ checker, type }) {
+   if (!boolean_ref_names.has(get_type_symbol_name(type))) return false
+   const inner = get_type_arguments({ checker, type })[0]
    return inner != null && is_boolean_like_type(inner)
 }
 
-function is_boolean_binding_checker_type(type, checker) {
+function is_boolean_binding_checker_type({ checker, type }) {
    return (
-      is_boolean_like_type(type) || is_boolean_ref_checker_type(type, checker)
+      is_boolean_like_type(type) || is_boolean_ref_checker_type({ checker, type })
    )
 }
 
@@ -68,7 +68,7 @@ function is_ast_boolean_type(type_node) {
 }
 
 function is_ast_boolean_ref_type(type_node) {
-   if (!BOOLEAN_REF_NAMES.has(get_ast_type_name(type_node))) return false
+   if (!boolean_ref_names.has(get_ast_type_name(type_node))) return false
    return is_ast_boolean_type(get_ast_type_arguments(type_node)?.[0])
 }
 
@@ -79,7 +79,7 @@ function get_call_type_arguments(call) {
 function is_ast_boolean_ref_call(init) {
    if (init?.type !== 'CallExpression') return false
    if (init.callee?.type !== 'Identifier') return false
-   if (!BOOLEAN_REF_CALLS.has(init.callee.name)) return false
+   if (!boolean_ref_calls.has(init.callee.name)) return false
 
    if (is_ast_boolean_type(get_call_type_arguments(init)?.[0])) return true
 
@@ -93,7 +93,7 @@ function is_ast_boolean_literal_init(init) {
    return init?.type === 'Literal' && typeof init.value === 'boolean'
 }
 
-function is_ast_boolean_binding(id, init) {
+function is_ast_boolean_binding({ id, init }) {
    const annotation = id.typeAnnotation?.typeAnnotation
    if (is_ast_boolean_type(annotation)) return true
    if (is_ast_boolean_ref_type(annotation)) return true
@@ -101,14 +101,20 @@ function is_ast_boolean_binding(id, init) {
    return is_ast_boolean_literal_init(init)
 }
 
-function is_boolean_binding(type_services, id, init) {
+function is_boolean_binding({ id, init, type_services }) {
    if (type_services) {
-      const type = get_node_type(type_services, id)
-      if (type && is_boolean_binding_checker_type(type, type_services.checker)) {
+      const type = get_node_type({ node: id, type_services })
+      if (
+         type &&
+         is_boolean_binding_checker_type({
+            checker: type_services.checker,
+            type,
+         })
+      ) {
          return true
       }
    }
-   return is_ast_boolean_binding(id, init)
+   return is_ast_boolean_binding({ id, init })
 }
 
 function lacks_is_prefix(name) {
@@ -119,9 +125,9 @@ export default {
    create(context) {
       const type_services = get_parser_type_services(context)
 
-      function check_identifier(id, init) {
+      function check_identifier({ id, init }) {
          if (id?.type !== 'Identifier') return
-         if (!is_boolean_binding(type_services, id, init)) return
+         if (!is_boolean_binding({ id, init, type_services })) return
          if (!lacks_is_prefix(id.name)) return
 
          context.report({
@@ -131,22 +137,22 @@ export default {
          })
       }
 
-      function visitVariableDeclarator(node) {
-         check_identifier(node.id, node.init)
+      function visit_variable_declarator(node) {
+         check_identifier({ id: node.id, init: node.init })
       }
 
-      function visitFunction(node) {
+      function visit_function(node) {
          for (const param of node.params) {
-            check_identifier(param, null)
+            check_identifier({ id: param, init: null })
          }
       }
 
       return {
-         ArrowFunctionExpression: visitFunction,
-         FunctionDeclaration: visitFunction,
-         FunctionExpression: visitFunction,
-         TSEmptyBodyFunctionExpression: visitFunction,
-         VariableDeclarator: visitVariableDeclarator,
+         ArrowFunctionExpression: visit_function,
+         FunctionDeclaration: visit_function,
+         FunctionExpression: visit_function,
+         TSEmptyBodyFunctionExpression: visit_function,
+         VariableDeclarator: visit_variable_declarator,
       }
    },
    meta: {

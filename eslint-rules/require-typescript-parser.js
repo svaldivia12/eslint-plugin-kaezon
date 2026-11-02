@@ -4,7 +4,7 @@
  * silently. Does not require type-aware linting (parserOptions.project).
  */
 
-const TS_EXTENSIONS = new Set(['.cts', '.mts', '.ts', '.tsx'])
+const ts_extensions = new Set(['.cts', '.mts', '.ts', '.tsx'])
 
 function get_filename(context) {
    return context.filename ?? context.getFilename?.() ?? ''
@@ -98,7 +98,7 @@ export default {
             return
          }
 
-         if (!TS_EXTENSIONS.has(extension)) return
+         if (!ts_extensions.has(extension)) return
 
          if (!has_typescript_parser(context)) {
             context.report({ messageId: 'missing_ts_parser', node })
