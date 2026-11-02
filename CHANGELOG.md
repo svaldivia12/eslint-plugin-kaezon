@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
+- Written in TypeScript and published as compiled ESM in `dist/`, with `.d.ts` files generated from the source.
+- Requires Node.js `>=26` and ESLint `^10.0.0` (flat config only).
+- The public types (`PresetName`, `CreateConfigOptions`, `KaezonPlugin`, `KaezonRule`, `KaezonRuleContext`, `KaezonRuleMap`, `RuleConfig`, `RuleSeverity`, `FlatConfig`) are exported from the package root.
 - `configs.nuxt` contains kaezon rules only and works with ESLint installed.
 - `configs.nuxt_house` requires `eslint-plugin-vue` and `@typescript-eslint/eslint-plugin`.
 - The plugin ships no parser. Use `@typescript-eslint/parser` and `vue-eslint-parser` in the consuming project.
