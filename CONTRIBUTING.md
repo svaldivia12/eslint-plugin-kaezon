@@ -21,13 +21,31 @@ the built package from `dist/`, and before publishing.
 
 ## Scripts
 
-| Script | What it does |
-|---|---|
-| `pnpm build` | Compiles the sources to `dist/` and emits `.d.ts` files. |
-| `pnpm test` | Runs the rule and config test suite with `node --test` against the `.ts` sources. |
-| `pnpm lint` | Lints this repo with its own rules plus ESLint recommended. Must report zero messages. |
-| `pnpm typecheck` | Builds, then type-checks sources, scripts and tests with `strict` on. |
+| Script               | What it does                                                                               |
+| -------------------- | ------------------------------------------------------------------------------------------ |
+| `pnpm build`         | Compiles the sources to `dist/` and emits `.d.ts` files.                                   |
+| `pnpm format`        | Rewrites every file with Prettier.                                                         |
+| `pnpm format:check`  | Fails if any file is not formatted. CI runs this.                                          |
+| `pnpm test`          | Runs the rule and config test suite with `node --test` against the `.ts` sources.          |
+| `pnpm lint`          | Lints this repo with its own rules plus ESLint recommended. Must report zero messages.     |
+| `pnpm typecheck`     | Builds, then type-checks sources, scripts and tests with `strict` on.                      |
 | `pnpm check:package` | Runs `publint` and `@arethetypeswrong/cli` over the packed tarball. Requires `pnpm build`. |
+
+## Formatting and commits
+
+Prettier owns formatting ([.prettierrc](.prettierrc)): three spaces, no semicolons,
+single quotes, `arrowParens: avoid`, `printWidth: 100`. Do not hand-format around it;
+run `pnpm format` and let CI confirm.
+
+Husky installs two hooks when you run `pnpm install`:
+
+- `pre-commit` runs `lint-staged`, which fixes and formats only the staged files.
+- `commit-msg` runs commitlint, which requires a
+  [Conventional Commits](https://www.conventionalcommits.org) message such as
+  `feat: add x`, `fix: handle y`, or `chore: bump z`.
+
+The history before v1.1.0 does not follow that convention and is intentionally left
+alone; the rule applies to new commits only.
 
 ## Adding a rule
 

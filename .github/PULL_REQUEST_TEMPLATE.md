@@ -19,6 +19,7 @@
 ## Checklist
 
 - [ ] `pnpm build` passes
+- [ ] `pnpm format:check` passes
 - [ ] `pnpm lint` reports zero messages
 - [ ] `pnpm test` passes
 - [ ] `pnpm typecheck` passes

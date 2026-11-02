@@ -48,11 +48,7 @@ function assert_nuxt_config(config: FlatConfig): void {
    }
 
    for (const rule_id of house_rule_ids) {
-      assert.equal(
-         rules[rule_id],
-         undefined,
-         `${rule_id} belongs to nuxt_house, not nuxt`,
-      )
+      assert.equal(rules[rule_id], undefined, `${rule_id} belongs to nuxt_house, not nuxt`)
    }
 }
 
@@ -62,11 +58,7 @@ function assert_nuxt_house_config(config: FlatConfig): void {
 
    assert.equal(config.name, 'kaezon/nuxt_house')
    assert.equal(plugins.kaezon, kaezon)
-   assert.deepEqual(Object.keys(plugins).sort(), [
-      '@typescript-eslint',
-      'kaezon',
-      'vue',
-   ])
+   assert.deepEqual(Object.keys(plugins).sort(), ['@typescript-eslint', 'kaezon', 'vue'])
 
    for (const rule_id of custom_nuxt_rules) {
       assert.equal(rules[rule_id], 'error')
@@ -84,9 +76,7 @@ function assert_nuxt_house_config(config: FlatConfig): void {
       format: ['camelCase'],
       selector: 'function',
    })
-   assert.ok(
-      Array.isArray(rules['@typescript-eslint/explicit-function-return-type']),
-   )
+   assert.ok(Array.isArray(rules['@typescript-eslint/explicit-function-return-type']))
 }
 
 describe('createConfig', () => {
@@ -100,10 +90,7 @@ describe('createConfig', () => {
    })
 
    it('builds nuxt_house as a lazy getter', () => {
-      const descriptor = Object.getOwnPropertyDescriptor(
-         kaezon.configs,
-         'nuxt_house',
-      )
+      const descriptor = Object.getOwnPropertyDescriptor(kaezon.configs, 'nuxt_house')
 
       assert.ok(descriptor, 'nuxt_house must be defined on configs')
       assert.equal(typeof descriptor.get, 'function')
@@ -112,10 +99,7 @@ describe('createConfig', () => {
 
    it('does not put third-party rules in the nuxt preset', () => {
       for (const key of Object.keys(rules_of(kaezon.configs.nuxt))) {
-         assert.ok(
-            key.startsWith('kaezon/'),
-            `unexpected non-kaezon rule in nuxt preset: ${key}`,
-         )
+         assert.ok(key.startsWith('kaezon/'), `unexpected non-kaezon rule in nuxt preset: ${key}`)
       }
    })
 
@@ -192,13 +176,7 @@ describe('createConfig', () => {
    it('falls back to the default globs when files is missing', () => {
       const config = kaezon.createConfig({ preset: 'ts' })
 
-      assert.deepEqual(config.files, [
-         '**/*.ts',
-         '**/*.tsx',
-         '**/*.mts',
-         '**/*.cts',
-         '**/*.vue',
-      ])
+      assert.deepEqual(config.files, ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts', '**/*.vue'])
    })
 
    it('throws on an unknown preset', () => {
@@ -207,14 +185,8 @@ describe('createConfig', () => {
       const unknown_preset = 'nope' as PresetName
       const removed_preset = 'all' as PresetName
 
-      assert.throws(
-         () => kaezon.createConfig({ preset: unknown_preset }),
-         /Unknown preset "nope"/,
-      )
-      assert.throws(
-         () => kaezon.createConfig({ preset: removed_preset }),
-         /Unknown preset "all"/,
-      )
+      assert.throws(() => kaezon.createConfig({ preset: unknown_preset }), /Unknown preset "nope"/)
+      assert.throws(() => kaezon.createConfig({ preset: removed_preset }), /Unknown preset "all"/)
    })
 
    it('lists the valid presets in the error message', () => {

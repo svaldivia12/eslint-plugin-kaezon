@@ -67,22 +67,40 @@
    },
    "scripts": {
       "build": "tsc --project tsconfig.json",
+      "format": "prettier --write .",
+      "format:check": "prettier --check .",
       "lint": "eslint .",
+      "prepare": "husky",
       "typecheck": "pnpm run build && tsc --project tsconfig.test.json",
       "test": "node --test tests/**/*.test.ts",
       "check:package": "publint && attw --pack . --profile esm-only",
       "prepublishOnly": "pnpm run build && pnpm run lint && pnpm run test && pnpm run typecheck"
    },
+   "lint-staged": {
+      "*.{js,ts}": [
+         "eslint --fix",
+         "prettier --write"
+      ],
+      "*.{json,md,yml,yaml}": [
+         "prettier --write"
+      ]
+   },
    "devDependencies": {
       "@arethetypeswrong/cli": "^0.18.5",
+      "@commitlint/cli": "^21.2.4",
+      "@commitlint/config-conventional": "^21.2.4",
       "@eslint/js": "^10.0.1",
       "@types/node": "^26.6.6",
       "@typescript-eslint/eslint-plugin": "^8.72.1",
       "@typescript-eslint/parser": "^8.72.1",
       "@typescript-eslint/utils": "^8.72.1",
       "eslint": "^10.14.0",
+      "eslint-config-prettier": "^10.1.8",
       "eslint-plugin-vue": "^10.12.0",
       "globals": "^17.13.0",
+      "husky": "^9.1.7",
+      "lint-staged": "^17.6.0",
+      "prettier": "^3.9.10",
       "publint": "^0.3.25",
       "typescript": "~6.0.3",
       "vue-eslint-parser": "^10.4.1"

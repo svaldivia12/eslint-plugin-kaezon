@@ -41,9 +41,7 @@ function get_parser_name(parser: unknown): string {
 
 function is_typescript_parser_name(name: string): boolean {
    if (!name) return false
-   return (
-      name === '@typescript-eslint/parser' || name.includes('typescript-eslint')
-   )
+   return name === '@typescript-eslint/parser' || name.includes('typescript-eslint')
 }
 
 function is_vue_parser_name(name: string): boolean {
@@ -51,15 +49,11 @@ function is_vue_parser_name(name: string): boolean {
    return name === VUE_PARSER_HINT || name.includes(VUE_PARSER_HINT)
 }
 
-function get_parser_services(
-   context: KaezonRuleContext,
-): Record<string, unknown> {
+function get_parser_services(context: KaezonRuleContext): Record<string, unknown> {
    return (context.sourceCode?.parserServices ?? {}) as Record<string, unknown>
 }
 
-function has_ts_parser_services(
-   context: KaezonRuleContext,
-): boolean {
+function has_ts_parser_services(context: KaezonRuleContext): boolean {
    return Boolean(get_parser_services(context).esTreeNodeToTSNodeMap)
 }
 
@@ -90,14 +84,10 @@ function parser_option_has_typescript(parser_option: unknown): boolean {
       return parser_option_has_typescript(option.ts)
    }
 
-   return Object.values(parser_option).some(value =>
-      parser_option_has_typescript(value),
-   )
+   return Object.values(parser_option).some(value => parser_option_has_typescript(value))
 }
 
-function has_typescript_parser(
-   context: KaezonRuleContext,
-): boolean {
+function has_typescript_parser(context: KaezonRuleContext): boolean {
    if (has_ts_parser_services(context)) return true
 
    const language_options = context.languageOptions ?? {}
@@ -110,9 +100,7 @@ function has_typescript_parser(
    )
 }
 
-const rule: KaezonRule<
-   'missing_ts_parser' | 'missing_vue_parser' | 'missing_vue_ts_parser'
-> = {
+const rule: KaezonRule<'missing_ts_parser' | 'missing_vue_parser' | 'missing_vue_ts_parser'> = {
    create(context) {
       function visit_program(node: TSESTree.Program): void {
          const extension = get_extension(get_filename(context))

@@ -1,37 +1,37 @@
 version: 2
 updates:
-  - package-ecosystem: npm
-    directory: /
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
-    commit-message:
-      prefix: chore
-      include: scope
-    groups:
-      eslint:
-        patterns:
-          - eslint
-          - '@eslint/*'
-          - '@typescript-eslint/*'
-          - eslint-plugin-*
-      tooling:
-        patterns:
-          - typescript
-          - publint
-          - '@arethetypeswrong/*'
-    ignore:
-      # typescript 7 no longer ships the compiler API (TypeChecker, Type,
-      # TypeFlags...). eslint-rules/boolean-is-prefix.ts imports it for the
-      # type-aware check, so the build breaks on 7. Revisit once the rule can
-      # drop that dependency.
-      - dependency-name: typescript
-        update-types:
-          - version-update:semver-major
+   - package-ecosystem: npm
+     directory: /
+     schedule:
+        interval: weekly
+     open-pull-requests-limit: 5
+     commit-message:
+        prefix: chore
+        include: scope
+     groups:
+        eslint:
+           patterns:
+              - eslint
+              - '@eslint/*'
+              - '@typescript-eslint/*'
+              - eslint-plugin-*
+        tooling:
+           patterns:
+              - typescript
+              - publint
+              - '@arethetypeswrong/*'
+     ignore:
+        # typescript 7 no longer ships the compiler API (TypeChecker, Type,
+        # TypeFlags...). eslint-rules/boolean-is-prefix.ts imports it for the
+        # type-aware check, so the build breaks on 7. Revisit once the rule can
+        # drop that dependency.
+        - dependency-name: typescript
+          update-types:
+             - version-update:semver-major
 
-  - package-ecosystem: github-actions
-    directory: /
-    schedule:
-      interval: weekly
-    commit-message:
-      prefix: ci
+   - package-ecosystem: github-actions
+     directory: /
+     schedule:
+        interval: weekly
+     commit-message:
+        prefix: ci

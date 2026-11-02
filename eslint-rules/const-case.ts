@@ -78,10 +78,7 @@ function to_lower_case(name: string): string {
  */
 function is_exported(declaration: TSESTree.VariableDeclaration): boolean {
    const { parent } = declaration
-   return (
-      parent?.type === 'ExportNamedDeclaration' ||
-      parent?.type === 'ExportDefaultDeclaration'
-   )
+   return parent?.type === 'ExportNamedDeclaration' || parent?.type === 'ExportDefaultDeclaration'
 }
 
 interface DeclarationShape {
@@ -90,31 +87,17 @@ interface DeclarationShape {
    name: string
 }
 
-function should_require_lower_case({
-   init,
-   kind,
-   name,
-}: DeclarationShape): boolean {
-   if (
-      !UPPER_CASE_REGEX.test(name) ||
-      is_require_call(init) ||
-      has_as_const(init)
-   ) {
+function should_require_lower_case({ init, kind, name }: DeclarationShape): boolean {
+   if (!UPPER_CASE_REGEX.test(name) || is_require_call(init) || has_as_const(init)) {
       return false
    }
 
    return kind === 'let' || (kind === 'const' && !is_literal(init))
 }
 
-function should_require_upper_case({
-   init,
-   kind,
-   name,
-}: DeclarationShape): boolean {
+function should_require_upper_case({ init, kind, name }: DeclarationShape): boolean {
    return (
-      kind === 'const' &&
-      !UPPER_CASE_REGEX.test(name) &&
-      (is_literal(init) || has_as_const(init))
+      kind === 'const' && !UPPER_CASE_REGEX.test(name) && (is_literal(init) || has_as_const(init))
    )
 }
 
@@ -157,8 +140,7 @@ const rule: KaezonRule<'lowerCase' | 'renameTo' | 'upperCase'> = {
 
          if (targets.length === 0) return null
 
-         return fixer =>
-            targets.map(target => fixer.replaceText(target, next_name))
+         return fixer => targets.map(target => fixer.replaceText(target, next_name))
       }
 
       function report_lower_case({
@@ -227,9 +209,7 @@ const rule: KaezonRule<'lowerCase' | 'renameTo' | 'upperCase'> = {
          )
       }
 
-      function visit_variable_declaration(
-         node: TSESTree.VariableDeclaration,
-      ): void {
+      function visit_variable_declaration(node: TSESTree.VariableDeclaration): void {
          for (const declaration of node.declarations) {
             if (declaration.id.type !== 'Identifier') continue
 

@@ -2,91 +2,91 @@ name: Bug report
 description: Something is reported that should not be, or not reported when it should be.
 labels: [bug]
 body:
-  - type: markdown
-    attributes:
-      value: |
-        Thanks for the report. For a security issue, do not open an issue: use
-        [GitHub Security Advisories](https://github.com/svaldivia12/eslint-plugin-kaezon/security/advisories/new) instead.
+   - type: markdown
+     attributes:
+        value: |
+           Thanks for the report. For a security issue, do not open an issue: use
+           [GitHub Security Advisories](https://github.com/svaldivia12/eslint-plugin-kaezon/security/advisories/new) instead.
 
-  - type: input
-    id: rule
-    attributes:
-      label: Rule id
-      description: The kaezon rule involved, or the preset if the problem is configuration.
-      placeholder: kaezon/const-case
-    validations:
-      required: true
+   - type: input
+     id: rule
+     attributes:
+        label: Rule id
+        description: The kaezon rule involved, or the preset if the problem is configuration.
+        placeholder: kaezon/const-case
+     validations:
+        required: true
 
-  - type: textarea
-    id: reproduction
-    attributes:
-      label: Minimal reproduction
-      description: The smallest file and `eslint.config.js` that show the problem. Include the exact output.
-      render: js
-    validations:
-      required: true
+   - type: textarea
+     id: reproduction
+     attributes:
+        label: Minimal reproduction
+        description: The smallest file and `eslint.config.js` that show the problem. Include the exact output.
+        render: js
+     validations:
+        required: true
 
-  - type: dropdown
-    id: direction
-    attributes:
-      label: What went wrong?
-      options:
-        - False positive (reported code that should pass)
-        - False negative (did not report code that should fail)
-        - Crash or internal error
-        - Configuration or preset problem
-        - Wrong autofix or message
-    validations:
-      required: true
+   - type: dropdown
+     id: direction
+     attributes:
+        label: What went wrong?
+        options:
+           - False positive (reported code that should pass)
+           - False negative (did not report code that should fail)
+           - Crash or internal error
+           - Configuration or preset problem
+           - Wrong autofix or message
+     validations:
+        required: true
 
-  - type: input
-    id: version
-    attributes:
-      label: Plugin version
-      placeholder: 1.0.0
-    validations:
-      required: true
+   - type: input
+     id: version
+     attributes:
+        label: Plugin version
+        placeholder: 1.0.0
+     validations:
+        required: true
 
-  - type: input
-    id: eslint
-    attributes:
-      label: ESLint version
-      placeholder: 10.14.0
-    validations:
-      required: true
+   - type: input
+     id: eslint
+     attributes:
+        label: ESLint version
+        placeholder: 10.14.0
+     validations:
+        required: true
 
-  - type: input
-    id: node
-    attributes:
-      label: Node.js version
-      placeholder: 24.9.0
-    validations:
-      required: true
+   - type: input
+     id: node
+     attributes:
+        label: Node.js version
+        placeholder: 24.9.0
+     validations:
+        required: true
 
-  - type: dropdown
-    id: parser
-    attributes:
-      label: Parser
-      multiple: true
-      options:
-        - '@typescript-eslint/parser'
-        - vue-eslint-parser
-        - espree (default)
-    validations:
-      required: true
+   - type: dropdown
+     id: parser
+     attributes:
+        label: Parser
+        multiple: true
+        options:
+           - '@typescript-eslint/parser'
+           - vue-eslint-parser
+           - espree (default)
+     validations:
+        required: true
 
-  - type: checkboxes
-    id: typed
-    attributes:
-      label: Typed linting
-      options:
-        - label: The config sets `parserOptions.project` or `parserOptions.projectService`
-          required: false
+   - type: checkboxes
+     id: typed
+     attributes:
+        label: Typed linting
+        options:
+           - label: The config sets `parserOptions.project` or `parserOptions.projectService`
+             required: false
 
-  - type: textarea
-    id: extra
-    attributes:
-      label: Anything else
-      description: Related config, stack traces, or a link to a repository that reproduces the problem.
-    validations:
-      required: false
+   - type: textarea
+     id: extra
+     attributes:
+        label: Anything else
+        description: Related config, stack traces, or a link to a repository that reproduces the problem.
+     validations:
+        required: false

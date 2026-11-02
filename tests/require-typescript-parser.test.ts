@@ -1,6 +1,13 @@
 import { it } from 'node:test'
 import rule_module from '../eslint-rules/require-typescript-parser.ts'
-import { as_rule_tester_rule, js_tester, ts_parser, ts_tester, vue_parser, vue_tester } from './helpers/rule_tester.ts'
+import {
+   as_rule_tester_rule,
+   js_tester,
+   ts_parser,
+   ts_tester,
+   vue_parser,
+   vue_tester,
+} from './helpers/rule_tester.ts'
 
 const JS_CODE = 'const x = 1'
 const VUE_SFC = '<script setup lang="ts">const x = 1</script>'
@@ -67,23 +74,27 @@ it('require-typescript-parser with Espree', () => {
 })
 
 it('require-typescript-parser with TypeScript parser', () => {
-   ts_tester.run('require-typescript-parser with TypeScript parser', as_rule_tester_rule(rule_module), {
-      invalid: [
-         {
-            code: JS_CODE,
-            errors: [{ messageId: 'missing_vue_parser' }],
-            filename: 'a.vue',
-            name: '.vue with TypeScript parser only',
-         },
-      ],
-      valid: [
-         {
-            code: JS_CODE,
-            filename: 'a.ts',
-            name: '.ts with TypeScript parser',
-         },
-      ],
-   })
+   ts_tester.run(
+      'require-typescript-parser with TypeScript parser',
+      as_rule_tester_rule(rule_module),
+      {
+         invalid: [
+            {
+               code: JS_CODE,
+               errors: [{ messageId: 'missing_vue_parser' }],
+               filename: 'a.vue',
+               name: '.vue with TypeScript parser only',
+            },
+         ],
+         valid: [
+            {
+               code: JS_CODE,
+               filename: 'a.ts',
+               name: '.ts with TypeScript parser',
+            },
+         ],
+      },
+   )
 })
 
 it('require-typescript-parser with Vue parser', () => {
@@ -161,18 +172,21 @@ const rejected_parser_options = [
 
 it('require-typescript-parser rejects parser shapes with no TypeScript', () => {
    for (const { name, parser } of rejected_parser_options) {
-      js_tester.run(`require-typescript-parser rejects (${name})`, as_rule_tester_rule(rule_module), {
-         invalid: [
-            {
-               code: JS_CODE,
-               errors: [{ messageId: 'missing_ts_parser' }],
-               filename: 'a.ts',
-               languageOptions: { parserOptions: { parser } },
-               name,
-            },
-         ],
-         valid: [],
-      })
+      js_tester.run(
+         `require-typescript-parser rejects (${name})`,
+         as_rule_tester_rule(rule_module),
+         {
+            invalid: [
+               {
+                  code: JS_CODE,
+                  errors: [{ messageId: 'missing_ts_parser' }],
+                  filename: 'a.ts',
+                  languageOptions: { parserOptions: { parser } },
+                  name,
+               },
+            ],
+            valid: [],
+         },
+      )
    }
 })
-

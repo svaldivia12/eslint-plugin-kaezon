@@ -20,7 +20,9 @@ describe('plugin entry point', () => {
 
    it('exposes every rule id without the prefix', () => {
       assert.deepEqual(
-         Object.keys(kaezon.rules).map(name => `kaezon/${name}`).sort(),
+         Object.keys(kaezon.rules)
+            .map(name => `kaezon/${name}`)
+            .sort(),
          rule_ids,
       )
    })

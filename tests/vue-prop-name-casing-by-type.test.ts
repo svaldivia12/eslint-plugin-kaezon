@@ -126,8 +126,7 @@ it('vue-prop-name-casing-by-type in SFC', () => {
             errors: [{ messageId: 'variableSnakeCase' }],
             filename: 'a.vue',
             name: 'SFC camelCase value prop',
-            output:
-               '<script setup lang="ts">defineProps<{ foo_bar: string }>()</script>',
+            output: '<script setup lang="ts">defineProps<{ foo_bar: string }>()</script>',
          },
       ],
       valid: [

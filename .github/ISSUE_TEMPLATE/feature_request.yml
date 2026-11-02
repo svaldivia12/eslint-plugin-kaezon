@@ -2,39 +2,39 @@ name: Feature request
 description: Propose a new rule, preset, or option.
 labels: [enhancement]
 body:
-  - type: textarea
-    id: problem
-    attributes:
-      label: Problem
-      description: What code pattern is hard to enforce or easy to get wrong today?
-    validations:
-      required: true
+   - type: textarea
+     id: problem
+     attributes:
+        label: Problem
+        description: What code pattern is hard to enforce or easy to get wrong today?
+     validations:
+        required: true
 
-  - type: textarea
-    id: proposal
-    attributes:
-      label: Proposal
-      description: The rule or option you have in mind, with an example of code that should pass and code that should fail.
-      render: js
-    validations:
-      required: true
+   - type: textarea
+     id: proposal
+     attributes:
+        label: Proposal
+        description: The rule or option you have in mind, with an example of code that should pass and code that should fail.
+        render: js
+     validations:
+        required: true
 
-  - type: dropdown
-    id: kind
-    attributes:
-      label: What kind of change is this?
-      options:
-        - New rule
-        - Option on an existing rule
-        - New preset or config helper
-        - Documentation
-    validations:
-      required: true
+   - type: dropdown
+     id: kind
+     attributes:
+        label: What kind of change is this?
+        options:
+           - New rule
+           - Option on an existing rule
+           - New preset or config helper
+           - Documentation
+     validations:
+        required: true
 
-  - type: textarea
-    id: alternatives
-    attributes:
-      label: Alternatives considered
-      description: Existing rules, plugins, or conventions that already cover this, and why they are not enough.
-    validations:
-      required: false
+   - type: textarea
+     id: alternatives
+     attributes:
+        label: Alternatives considered
+        description: Existing rules, plugins, or conventions that already cover this, and why they are not enough.
+     validations:
+        required: false

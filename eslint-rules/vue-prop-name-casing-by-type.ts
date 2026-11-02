@@ -13,9 +13,7 @@ function is_defines_props(node: TSESTree.CallExpression): boolean {
    return callee.type === 'Identifier' && callee.name === 'defineProps'
 }
 
-function extract_define_props_call(
-   node: TSESTree.CallExpression,
-): TSESTree.CallExpression | null {
+function extract_define_props_call(node: TSESTree.CallExpression): TSESTree.CallExpression | null {
    if (is_defines_props(node)) return node
 
    const { callee } = node
@@ -62,8 +60,7 @@ function get_props_from_type_literal(
 ): readonly TSESTree.TSPropertySignature[] {
    if (type_literal?.type !== 'TSTypeLiteral') return []
    return type_literal.members.filter(
-      (member): member is TSESTree.TSPropertySignature =>
-         member.type === 'TSPropertySignature',
+      (member): member is TSESTree.TSPropertySignature => member.type === 'TSPropertySignature',
    )
 }
 
@@ -96,9 +93,7 @@ function to_camel_case(name: string): string {
 }
 
 function to_snake_case(name: string): string {
-   return name.replaceAll(/([A-Z])/g, (_, char: string) =>
-      `_${char.toLowerCase()}`,
-   )
+   return name.replaceAll(/([A-Z])/g, (_, char: string) => `_${char.toLowerCase()}`)
 }
 
 const rule: KaezonRule<'functionCamelCase' | 'variableSnakeCase'> = {
@@ -162,10 +157,8 @@ const rule: KaezonRule<'functionCamelCase' | 'variableSnakeCase'> = {
       },
       fixable: 'code',
       messages: {
-         functionCamelCase:
-            "Function prop '{{name}}' should be camelCase (e.g. {{expected}}).",
-         variableSnakeCase:
-            "Variable prop '{{name}}' should be snake_case (e.g. {{expected}}).",
+         functionCamelCase: "Function prop '{{name}}' should be camelCase (e.g. {{expected}}).",
+         variableSnakeCase: "Variable prop '{{name}}' should be snake_case (e.g. {{expected}}).",
       },
       schema: [],
       type: 'suggestion',

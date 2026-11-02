@@ -10,10 +10,7 @@ function is_computed_call(node: TSESTree.Node): node is TSESTree.CallExpression 
 function is_function_getter(
    node: TSESTree.Node | undefined,
 ): node is TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression {
-   return (
-      node?.type === 'ArrowFunctionExpression' ||
-      node?.type === 'FunctionExpression'
-   )
+   return node?.type === 'ArrowFunctionExpression' || node?.type === 'FunctionExpression'
 }
 
 const rule: KaezonRule<'missingReturnType'> = {
@@ -37,13 +34,11 @@ const rule: KaezonRule<'missingReturnType'> = {
    },
    meta: {
       docs: {
-         description:
-            'Require explicit return types for getters passed to computed',
+         description: 'Require explicit return types for getters passed to computed',
          url: 'https://github.com/svaldivia12/eslint-plugin-kaezon#kaezoncomputed-explicit-return-type',
       },
       messages: {
-         missingReturnType:
-            'Computed getters must declare an explicit return type.',
+         missingReturnType: 'Computed getters must declare an explicit return type.',
       },
       schema: [],
       type: 'problem',

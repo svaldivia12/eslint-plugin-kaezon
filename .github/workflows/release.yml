@@ -1,59 +1,59 @@
 name: Release
 
 on:
-  push:
-    tags: ['v*']
-  workflow_dispatch:
+   push:
+      tags: ['v*']
+   workflow_dispatch:
 
 permissions:
-  contents: read
-  id-token: write
+   contents: read
+   id-token: write
 
 concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: false
+   group: release-${{ github.ref }}
+   cancel-in-progress: false
 
 jobs:
-  publish:
-    name: Publish to npm
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-          registry-url: https://registry.npmjs.org
-      # Trusted publishing (OIDC) needs npm >= 11.5.1 and needs no NPM_TOKEN.
-      - run: npm install --global npm@latest
-      - run: pnpm install --frozen-lockfile
-      # Fail before publishing if the CHANGELOG has no section for this tag,
-      # instead of publishing the package and then breaking the GitHub release.
-      - run: node scripts/release_notes.ts "${GITHUB_REF_NAME#v}" --check
-      - run: pnpm run build
-      - run: pnpm run check:package
-      - run: npm publish --access public --provenance
+   publish:
+      name: Publish to npm
+      runs-on: ubuntu-latest
+      steps:
+         - uses: actions/checkout@v7
+         - uses: pnpm/action-setup@v6
+         - uses: actions/setup-node@v7
+           with:
+              node-version-file: .nvmrc
+              cache: pnpm
+              registry-url: https://registry.npmjs.org
+         # Trusted publishing (OIDC) needs npm >= 11.5.1 and needs no NPM_TOKEN.
+         - run: npm install --global npm@latest
+         - run: pnpm install --frozen-lockfile
+         # Fail before publishing if the CHANGELOG has no section for this tag,
+         # instead of publishing the package and then breaking the GitHub release.
+         - run: node scripts/release_notes.ts "${GITHUB_REF_NAME#v}" --check
+         - run: pnpm run build
+         - run: pnpm run check:package
+         - run: npm publish --access public --provenance
 
-  github_release:
-    name: GitHub Release
-    needs: publish
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-      - name: Create release from CHANGELOG
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          version="${GITHUB_REF_NAME#v}"
-          notes_file="$(mktemp)"
-          node scripts/release_notes.ts "$version" > "$notes_file"
-          gh release create "$GITHUB_REF_NAME" \
-            --title "v${version}" \
-            --notes-file "$notes_file" \
-            --verify-tag
+   github_release:
+      name: GitHub Release
+      needs: publish
+      runs-on: ubuntu-latest
+      permissions:
+         contents: write
+      steps:
+         - uses: actions/checkout@v7
+         - uses: actions/setup-node@v7
+           with:
+              node-version-file: .nvmrc
+         - name: Create release from CHANGELOG
+           env:
+              GH_TOKEN: ${{ github.token }}
+           run: |
+              version="${GITHUB_REF_NAME#v}"
+              notes_file="$(mktemp)"
+              node scripts/release_notes.ts "$version" > "$notes_file"
+              gh release create "$GITHUB_REF_NAME" \
+                --title "v${version}" \
+                --notes-file "$notes_file" \
+                --verify-tag

@@ -91,9 +91,7 @@ const peer_plugins: Readonly<Record<string, string>> = {
    vue: 'eslint-plugin-vue',
 }
 
-const valid_short_names: readonly string[] = Object.keys(
-   rules_module.rules as KaezonRuleMap,
-)
+const valid_short_names: readonly string[] = Object.keys(rules_module.rules as KaezonRuleMap)
 
 const valid_short_name_set = new Set(valid_short_names)
 
@@ -188,9 +186,7 @@ function overlay_rules({
 
 function resolve_preset(preset: string): PresetName {
    if (!is_preset_name(preset)) {
-      throw new Error(
-         `Unknown preset "${preset}". Valid presets: ${preset_names.join(', ')}`,
-      )
+      throw new Error(`Unknown preset "${preset}". Valid presets: ${preset_names.join(', ')}`)
    }
 
    return preset
@@ -208,9 +204,7 @@ export function create_config({
    const overlay = options.rules ?? {}
    const is_house = preset === 'nuxt_house'
 
-   const plugins = is_house
-      ? { ...load_peer_plugins(), kaezon: plugin }
-      : { kaezon: plugin }
+   const plugins = is_house ? { ...load_peer_plugins(), kaezon: plugin } : { kaezon: plugin }
 
    return {
       files,

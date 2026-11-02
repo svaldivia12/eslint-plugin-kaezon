@@ -103,10 +103,7 @@ Override a rule in a following config object:
 ```js
 import kaezon_plugin from 'eslint-plugin-kaezon'
 
-export default [
-   kaezon_plugin.configs.nuxt,
-   { rules: { 'kaezon/const-case': 'off' } },
-]
+export default [kaezon_plugin.configs.nuxt, { rules: { 'kaezon/const-case': 'off' } }]
 ```
 
 `createConfig` keys accept kaezon short names (`const-case`) or prefixed ids (`kaezon/const-case`); those emit prefixed `kaezon/...` ids. Other ESLint rule ids (`curly`, `@typescript-eslint/...`, `vue/...`) are copied through so house style can be overridden without a second config object. Unknown `kaezon/...` names throw.
@@ -142,15 +139,15 @@ export default [
 
 ## Rules
 
-| Rule id | Description | Presets |
-|---|---|---|
-| `kaezon/boolean-is-prefix` | Require `is_` prefix for booleans and Vue boolean refs (`Ref` / `ShallowRef` / `ComputedRef`); type-aware when typed linting is enabled | vue, nuxt, nuxt_house |
-| `kaezon/computed-explicit-return-type` | Require explicit return types for getters passed to `computed` | vue, nuxt, nuxt_house |
-| `kaezon/const-case` | Require UPPER_CASE for literal and `as const` declarations, and lower case for mutable or computed bindings | ts, nuxt, nuxt_house |
-| `kaezon/prefer-object-params` | Prefer a single object parameter over multiple positional parameters | ts, nuxt, nuxt_house |
-| `kaezon/require-satisfies-with-as-const` | Require `as const satisfies SomeType` instead of bare `as const` to validate structure at compile time | ts, nuxt, nuxt_house |
-| `kaezon/require-typescript-parser` | Require a TypeScript parser for TS files, and `vue-eslint-parser` with a TypeScript parser for Vue files | ts, vue, nuxt, nuxt_house |
-| `kaezon/vue-prop-name-casing-by-type` | Enforce camelCase for function props and snake_case for other props in `defineProps` | vue, nuxt, nuxt_house |
+| Rule id                                  | Description                                                                                                                             | Presets                   |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| `kaezon/boolean-is-prefix`               | Require `is_` prefix for booleans and Vue boolean refs (`Ref` / `ShallowRef` / `ComputedRef`); type-aware when typed linting is enabled | vue, nuxt, nuxt_house     |
+| `kaezon/computed-explicit-return-type`   | Require explicit return types for getters passed to `computed`                                                                          | vue, nuxt, nuxt_house     |
+| `kaezon/const-case`                      | Require UPPER_CASE for literal and `as const` declarations, and lower case for mutable or computed bindings                             | ts, nuxt, nuxt_house      |
+| `kaezon/prefer-object-params`            | Prefer a single object parameter over multiple positional parameters                                                                    | ts, nuxt, nuxt_house      |
+| `kaezon/require-satisfies-with-as-const` | Require `as const satisfies SomeType` instead of bare `as const` to validate structure at compile time                                  | ts, nuxt, nuxt_house      |
+| `kaezon/require-typescript-parser`       | Require a TypeScript parser for TS files, and `vue-eslint-parser` with a TypeScript parser for Vue files                                | ts, vue, nuxt, nuxt_house |
+| `kaezon/vue-prop-name-casing-by-type`    | Enforce camelCase for function props and snake_case for other props in `defineProps`                                                    | vue, nuxt, nuxt_house     |
 
 `boolean-is-prefix` and `computed-explicit-return-type` target Vue code. In a project without Vue they match nothing, which is why they are left out of the `ts` preset.
 

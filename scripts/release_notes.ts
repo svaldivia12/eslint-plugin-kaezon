@@ -42,7 +42,10 @@ for (let index = start + 1; index < lines.length; index += 1) {
    }
 }
 
-const body = lines.slice(start + 1, end).join('\n').trim()
+const body = lines
+   .slice(start + 1, end)
+   .join('\n')
+   .trim()
 
 if (check_only) {
    if (!body) {

@@ -12,12 +12,8 @@ type FunctionNode =
    | TSESTree.FunctionExpression
    | TSESTree.TSEmptyBodyFunctionExpression
 
-function get_user_params(
-   params: readonly TSESTree.Parameter[],
-): readonly TSESTree.Parameter[] {
-   return params.filter(
-      param => !(param.type === 'Identifier' && param.name === 'this'),
-   )
+function get_user_params(params: readonly TSESTree.Parameter[]): readonly TSESTree.Parameter[] {
+   return params.filter(param => !(param.type === 'Identifier' && param.name === 'this'))
 }
 
 function is_computed_getter(node: TSESTree.Node): boolean {
@@ -68,8 +64,7 @@ const rule: KaezonRule<'preferObjectParams'> = {
    },
    meta: {
       docs: {
-         description:
-            'Prefer a single object parameter over multiple positional parameters.',
+         description: 'Prefer a single object parameter over multiple positional parameters.',
          url: 'https://github.com/svaldivia12/eslint-plugin-kaezon#kaezonprefer-object-params',
       },
       messages: {

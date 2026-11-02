@@ -6,10 +6,7 @@ import path from 'node:path'
 import { describe, it } from 'node:test'
 import { fileURLToPath } from 'node:url'
 
-const package_root = path.resolve(
-   path.dirname(fileURLToPath(import.meta.url)),
-   '..',
-)
+const package_root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
 /**
  * Only `dist/` is published, so the isolation copies the built package rather
@@ -53,27 +50,18 @@ interface HouseProbe {
  * resolves symlinks to their real path, which would find this repo's
  * node_modules and defeat the isolation.
  */
-async function build_isolated_copy({
-   keep,
-}: IsolatedCopyOptions): Promise<string> {
+async function build_isolated_copy({ keep }: IsolatedCopyOptions): Promise<string> {
    const dir = await mkdtemp(path.join(tmpdir(), 'kaezon-isolated-'))
    const modules_dir = path.join(dir, 'node_modules')
 
    await mkdir(modules_dir, { recursive: true })
    await cp(dist_dir, path.join(dir, 'dist'), { recursive: true })
-   await cp(
-      path.join(package_root, 'package.json'),
-      path.join(dir, 'package.json'),
-   )
+   await cp(path.join(package_root, 'package.json'), path.join(dir, 'package.json'))
 
    for (const package_name of [...required_peers, ...keep]) {
       const target = path.join(modules_dir, package_name)
       await mkdir(path.dirname(target), { recursive: true })
-      await symlink(
-         path.join(package_root, 'node_modules', package_name),
-         target,
-         'dir',
-      )
+      await symlink(path.join(package_root, 'node_modules', package_name), target, 'dir')
    }
 
    return dir
@@ -165,10 +153,6 @@ describe('nuxt_house with peer plugins', () => {
       assert.equal(result.code, 0, result.stderr)
       const payload = JSON.parse(result.stdout.trim()) as HouseProbe
       assert.equal(payload.name, 'kaezon/nuxt_house')
-      assert.deepEqual(payload.plugins.sort(), [
-         '@typescript-eslint',
-         'kaezon',
-         'vue',
-      ])
+      assert.deepEqual(payload.plugins.sort(), ['@typescript-eslint', 'kaezon', 'vue'])
    })
 })

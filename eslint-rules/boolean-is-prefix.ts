@@ -40,9 +40,7 @@ function get_node_type({
 
 function get_symbol_name(type: ts.Type): string | null {
    const symbol =
-      type.aliasSymbol ??
-      (type as { target?: ts.Type }).target?.symbol ??
-      type.getSymbol()
+      type.aliasSymbol ?? (type as { target?: ts.Type }).target?.symbol ?? type.getSymbol()
    return symbol?.getName() ?? null
 }
 
@@ -92,17 +90,12 @@ function is_ast_boolean_type(type_node: TSESTree.TypeNode | undefined): boolean 
    if (!type_node) return false
    if (type_node.type === 'TSBooleanKeyword') return true
    if (type_node.type === 'TSLiteralType') {
-      return (
-         type_node.literal.type === 'Literal' &&
-         typeof type_node.literal.value === 'boolean'
-      )
+      return type_node.literal.type === 'Literal' && typeof type_node.literal.value === 'boolean'
    }
    return false
 }
 
-function is_ast_boolean_ref_type(
-   type_node: TSESTree.TypeNode | undefined,
-): boolean {
+function is_ast_boolean_ref_type(type_node: TSESTree.TypeNode | undefined): boolean {
    if (!boolean_ref_names.has(get_ast_type_name(type_node) ?? '')) return false
    return is_ast_boolean_type(get_ast_type_arguments(type_node)[0])
 }
@@ -115,9 +108,7 @@ function is_ast_boolean_ref_call(init: TSESTree.Node | null): boolean {
    if (is_ast_boolean_type(init.typeArguments?.params[0])) return true
 
    const first_arg = init.arguments[0]
-   return (
-      first_arg?.type === 'Literal' && typeof first_arg.value === 'boolean'
-   )
+   return first_arg?.type === 'Literal' && typeof first_arg.value === 'boolean'
 }
 
 function is_ast_boolean_binding({
@@ -181,9 +172,7 @@ const rule: KaezonRule<'missingIsPrefix'> = {
          })
       }
 
-      function visit_variable_declarator(
-         node: TSESTree.VariableDeclarator,
-      ): void {
+      function visit_variable_declarator(node: TSESTree.VariableDeclarator): void {
          check_identifier({ id: node.id, init: node.init })
       }
 
@@ -207,8 +196,7 @@ const rule: KaezonRule<'missingIsPrefix'> = {
    },
    meta: {
       docs: {
-         description:
-            'Require is_ prefix for boolean and Vue boolean-ref bindings',
+         description: 'Require is_ prefix for boolean and Vue boolean-ref bindings',
          url: 'https://github.com/svaldivia12/eslint-plugin-kaezon#kaezonboolean-is-prefix',
       },
       messages: {
