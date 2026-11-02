@@ -2,36 +2,87 @@
    "name": "eslint-plugin-kaezon",
    "version": "1.0.0",
    "description": "ESLint 10 flat-config plugin with custom TypeScript and Vue rules.",
+   "keywords": [
+      "eslint",
+      "eslintplugin",
+      "eslint-plugin",
+      "flat-config",
+      "typescript",
+      "vue",
+      "nuxt",
+      "linting"
+   ],
+   "homepage": "https://github.com/svaldivia12/eslint-plugin-kaezon#readme",
+   "bugs": {
+      "url": "https://github.com/svaldivia12/eslint-plugin-kaezon/issues"
+   },
+   "repository": {
+      "type": "git",
+      "url": "git+https://github.com/svaldivia12/eslint-plugin-kaezon.git"
+   },
+   "license": "MIT",
+   "author": {
+      "name": "Sebastián Valdivia Loyola",
+      "email": "admin@svaldivia.cl",
+      "url": "https://github.com/svaldivia12"
+   },
    "type": "module",
+   "sideEffects": false,
    "exports": {
       ".": {
          "types": "./index.d.ts",
          "import": "./index.js",
          "default": "./index.js"
-      }
+      },
+      "./package.json": "./package.json"
    },
    "files": [
       "index.js",
       "index.d.ts",
       "configs/**",
       "eslint-rules/**",
-      "README.md"
+      "README.md",
+      "CHANGELOG.md"
    ],
    "packageManager": "pnpm@12.16.1",
    "engines": {
-      "node": ">=26",
-      "pnpm": ">=12"
+      "node": "^22.13.0 || >=24"
+   },
+   "publishConfig": {
+      "access": "public",
+      "provenance": true
    },
    "peerDependencies": {
+      "@typescript-eslint/eslint-plugin": "^8.0.0",
       "eslint": "^10.0.0",
+      "eslint-plugin-vue": "^10.0.0",
       "typescript": ">=5"
    },
+   "peerDependenciesMeta": {
+      "@typescript-eslint/eslint-plugin": {
+         "optional": true
+      },
+      "eslint-plugin-vue": {
+         "optional": true
+      }
+   },
    "scripts": {
-      "test": "node --test tests/**/*.test.js"
+      "lint": "eslint .",
+      "typecheck": "tsc --project tsconfig.json",
+      "test": "node --test tests/**/*.test.js",
+      "check:package": "publint && attw --pack . --profile esm-only",
+      "prepublishOnly": "pnpm run lint && pnpm run test && pnpm run typecheck && pnpm run check:package"
    },
    "devDependencies": {
+      "@arethetypeswrong/cli": "^0.18.5",
+      "@eslint/js": "^10.0.1",
+      "@types/node": "^26.6.6",
+      "@typescript-eslint/eslint-plugin": "^8.72.1",
       "@typescript-eslint/parser": "^8.72.1",
       "eslint": "^10.14.0",
+      "eslint-plugin-vue": "^10.12.0",
+      "globals": "^17.13.0",
+      "publint": "^0.3.25",
       "typescript": "~6.0.3",
       "vue-eslint-parser": "^10.4.1"
    }
