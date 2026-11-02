@@ -37,6 +37,9 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # tests/types/public_api.test-d.ts imports from dist/, so the types test
+      # needs a build before it can resolve the published entry point.
+      - run: pnpm run build
       - run: pnpm run typecheck
 
   test:

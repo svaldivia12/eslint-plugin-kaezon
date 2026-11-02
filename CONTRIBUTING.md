@@ -24,7 +24,7 @@ and before publishing.
 | `pnpm build` | Compiles the sources to `dist/` and emits `.d.ts` files. |
 | `pnpm test` | Runs the rule and config test suite with `node --test` against the `.ts` sources. |
 | `pnpm lint` | Lints this repo with its own rules plus ESLint recommended. Must report zero messages. |
-| `pnpm typecheck` | Type-checks sources, scripts and tests with `strict` on. |
+| `pnpm typecheck` | Builds, then type-checks sources, scripts and tests with `strict` on. |
 | `pnpm check:package` | Runs `publint` and `@arethetypeswrong/cli` over the packed tarball. Requires `pnpm build`. |
 
 ## Adding a rule

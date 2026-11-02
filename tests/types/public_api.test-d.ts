@@ -3,7 +3,7 @@
  * this file with `strict` on; nothing here runs at test time.
  *
  * It imports from `dist/`, not from the sources, so it validates what npm
- * actually ships. Run `pnpm build` first (CI does).
+ * actually ships. `pnpm typecheck` runs `pnpm build` first for that reason.
  */
 import assert from 'node:assert/strict'
 import type { Linter } from 'eslint'
