@@ -39,6 +39,7 @@ const rule: KaezonRule<'missingReturnType'> = {
       docs: {
          description:
             'Require explicit return types for getters passed to computed',
+         url: 'https://github.com/svaldivia12/eslint-plugin-kaezon#kaezoncomputed-explicit-return-type',
       },
       messages: {
          missingReturnType:

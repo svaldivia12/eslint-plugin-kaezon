@@ -143,6 +143,7 @@ const rule: KaezonRule<
       docs: {
          description:
             'Require a TypeScript parser for TS files, and vue-eslint-parser with a TypeScript parser for Vue files',
+         url: 'https://github.com/svaldivia12/eslint-plugin-kaezon#kaezonrequire-typescript-parser',
       },
       messages: {
          missing_ts_parser:

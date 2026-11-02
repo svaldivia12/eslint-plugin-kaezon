@@ -1,6 +1,7 @@
 node_modules/
 .pnpm-store/
 dist/
+examples/*/node_modules/
 
 .DS_Store
 Thumbs.db

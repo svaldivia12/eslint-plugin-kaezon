@@ -1,8 +1,8 @@
 # eslint-plugin-kaezon
 
-[![npm version](https://img.shields.io/npm/v/eslint-plugin-kaezon.svg)](https://www.npmjs.com/package/eslint-plugin-kaezon)
-[![CI](https://github.com/svaldivia12/eslint-plugin-kaezon/actions/workflows/ci.yml/badge.svg)](https://github.com/svaldivia12/eslint-plugin-kaezon/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/npm/l/eslint-plugin-kaezon.svg)](./LICENSE)
+[![npm version](https://img.shields.io/npm/v/eslint-plugin-kaezon.svg?cacheSeconds=0)](https://www.npmjs.com/package/eslint-plugin-kaezon)
+[![CI](https://github.com/svaldivia12/eslint-plugin-kaezon/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/svaldivia12/eslint-plugin-kaezon/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/npm/l/eslint-plugin-kaezon.svg?cacheSeconds=0)](./LICENSE)
 
 ESLint 10 flat-config plugin with custom TypeScript and Vue rules.
 
@@ -154,6 +154,38 @@ export default [
 
 `boolean-is-prefix` and `computed-explicit-return-type` target Vue code. In a project without Vue they match nothing, which is why they are left out of the `ts` preset.
 
+None of the rules accept options: every one declares an empty `schema`, so there is nothing to configure beyond on, off, or warn. Configure them through the preset and the `rules` overlay of `createConfig`.
+
+### kaezon/boolean-is-prefix
+
+Requires an `is_` prefix on bindings that hold a boolean or a Vue boolean ref. Without typed linting it reads the AST: `boolean` annotations, `Ref<boolean>`, and boolean literals. With typed linting it asks the type checker, so an inferred `shallowRef(getFlag())` is caught too.
+
+The prefix must read naturally in English. Do not add `is_` to a name where it produces nonsense.
+
+### kaezon/computed-explicit-return-type
+
+Requires an explicit return type on getters passed to `computed`. Applies to arrow functions and function expressions.
+
+### kaezon/const-case
+
+UPPER_CASE for `const` bindings initialised with a literal or `as const`, lower case for anything mutable or computed. `let` must be lower case, `var` is ignored, and `require(...)` calls keep their name. Destructuring is not checked.
+
+### kaezon/prefer-object-params
+
+Prefers a single object parameter over multiple positional parameters. Callbacks (functions passed as arguments or properties), object methods, and `computed()` getters are skipped, because their signature is dictated by the caller.
+
+### kaezon/require-satisfies-with-as-const
+
+Requires `as const satisfies SomeType` instead of bare `as const`, so the object shape is validated at compile time while literal inference is preserved. Primitive literals are skipped because they need no structural check.
+
+### kaezon/require-typescript-parser
+
+Reports when a `.ts`, `.tsx`, `.mts`, or `.cts` file is parsed without a TypeScript-capable parser, or when a `.vue` file lacks `vue-eslint-parser` or a TypeScript parser for its `<script>`. Without the right parser the other rules silently do nothing, so this rule turns that misconfiguration into a visible error. It does not require typed linting.
+
+### kaezon/vue-prop-name-casing-by-type
+
+camelCase for props whose type is a function, snake_case for every other prop in `defineProps`. Replaces `vue/prop-name-casing`, which cannot tell the two apart. Skips names containing `:` and `update:`.
+
 ## Nuxt house style
 
 `configs.nuxt_house` enables every `kaezon/*` rule above that applies to Vue + TypeScript, plus this house style:
@@ -184,6 +216,16 @@ Without `parserOptions.project` or `parserOptions.projectService`, ESLint report
 
 `ts`, `vue`, and `nuxt` do not include house style and do not need typed linting.
 
+## Examples
+
+Two runnable projects live under `examples/`:
+
+- `examples/ts` — `configs.ts` with only the kaezon rules.
+- `examples/nuxt` — `configs.nuxt_house` with the house style and typed linting.
+
+Both ship code that fails on purpose, so `npx eslint probe.ts` shows the rules
+in action and `npx eslint probe.ts --fix` shows the automatic renames.
+
 ## API
 
 Default export:
@@ -205,7 +247,7 @@ TypeScript types ship with the package (`dist/index.d.ts`), including `PresetNam
 
 ## Requirements
 
-- Node.js `>=26`
+- Node.js `^20.19.0 || ^22.13.0 || >=24`
 - ESLint `^10.0.0`
 - TypeScript `>=5` (peer, for the type-aware checks)
 

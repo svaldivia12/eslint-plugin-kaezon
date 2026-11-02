@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `kaezon/vue-prop-name-casing-by-type` now autofixes prop names, keeping the original quote style for string-literal keys.
+- `kaezon/const-case` now autofixes names that are not exported, renaming the declaration and every reference in the file. Exported bindings get a suggestion instead, because renaming them would break importers.
+- `meta.docs.url` on every rule, pointing at its section in the README.
+- Per-rule documentation in the README.
+- `examples/ts` and `examples/nuxt`, both runnable.
+- A CI job that checks the built package on every Node version `engines` claims to support.
+
+### Changed
+
+- `engines.node` is now `^20.19.0 || ^22.13.0 || >=24`, matching ESLint 10. The published code only needs `node:fs`, `node:url`, and `Object.hasOwn`, so the previous `>=26` was stricter than necessary.
+- Rule messages now name the offending identifier and the expected name.
+
+### Fixed
+
+- Removed a regular expression in `const-case` that backtracked on long runs of underscores.
+
 ## [1.0.0] - 2026-11-02
 
 ### Added

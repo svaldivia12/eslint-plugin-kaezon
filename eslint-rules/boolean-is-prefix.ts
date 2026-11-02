@@ -209,6 +209,7 @@ const rule: KaezonRule<'missingIsPrefix'> = {
       docs: {
          description:
             'Require is_ prefix for boolean and Vue boolean-ref bindings',
+         url: 'https://github.com/svaldivia12/eslint-plugin-kaezon#kaezonboolean-is-prefix',
       },
       messages: {
          missingIsPrefix:

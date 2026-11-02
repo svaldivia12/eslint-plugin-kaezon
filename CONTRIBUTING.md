@@ -4,7 +4,7 @@ Thanks for taking the time to contribute.
 
 ## Setup
 
-Requires Node.js `>=26` and pnpm 12.
+Requires Node.js `^20.19.0 || ^22.13.0 || >=24` and pnpm 12.
 
 ```sh
 pnpm install

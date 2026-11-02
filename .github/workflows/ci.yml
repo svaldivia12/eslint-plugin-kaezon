@@ -57,6 +57,40 @@ jobs:
       - run: pnpm run build
       - run: pnpm test
 
+  compat:
+    name: Compat (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      # Every version the "engines" field claims to support. The source suite
+      # needs native type stripping (Node >= 22.18), so this job verifies the
+      # published artefact instead: dist/ is what consumers actually run.
+      matrix:
+        node: ['20.19', '22.13', '24', '26']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - name: Smoke test the built package
+        run: |
+          node --input-type=module -e "
+          import kaezon from './dist/index.js'
+          const presets = ['ts', 'vue', 'nuxt', 'nuxt_house']
+          for (const name of presets) {
+             if (!kaezon.configs[name]) throw new Error('missing preset: ' + name)
+          }
+          const rule_count = Object.keys(kaezon.rules).length
+          if (rule_count !== 7) throw new Error('expected 7 rules, got ' + rule_count)
+          const config = kaezon.createConfig({ preset: 'ts' })
+          if (!config.plugins.kaezon) throw new Error('createConfig did not register the plugin')
+          console.log('dist ok on ' + process.version + ' at v' + kaezon.meta.version)
+          "
+
   package:
     name: Package
     runs-on: ubuntu-latest

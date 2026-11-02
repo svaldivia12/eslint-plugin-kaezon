@@ -111,3 +111,68 @@ it('require-typescript-parser with Vue parser', () => {
       ],
    })
 })
+
+/**
+ * Exercises the parserOptions.parser shapes that the rule accepts. These do not
+ * need a real parser instance, only the value the option carries, so Espree can
+ * parse the code while the rule inspects the configuration.
+ */
+const parser_option_cases = [
+   {
+      name: 'parser as the package name string',
+      parser: '@typescript-eslint/parser',
+   },
+   {
+      name: 'parser as an object exposing meta.name',
+      parser: { meta: { name: '@typescript-eslint/parser' } },
+   },
+   {
+      name: 'parser nested one level under ts',
+      parser: { ts: '@typescript-eslint/parser' },
+   },
+   {
+      name: 'parser nested two levels deep',
+      parser: { inner: { ts: { meta: { name: '@typescript-eslint/parser' } } } },
+   },
+]
+
+it('require-typescript-parser accepts the documented parser shapes', () => {
+   for (const { name, parser } of parser_option_cases) {
+      js_tester.run(`require-typescript-parser (${name})`, as_rule_tester_rule(rule_module), {
+         invalid: [],
+         valid: [
+            {
+               code: JS_CODE,
+               filename: 'a.ts',
+               languageOptions: { parserOptions: { parser } },
+               name,
+            },
+         ],
+      })
+   }
+})
+
+const rejected_parser_options = [
+   { name: 'parser as an unrelated string', parser: 'some-other-parser' },
+   { name: 'parser as a number', parser: 42 },
+   { name: 'parser as null', parser: null },
+   { name: 'parser as an object without a recognisable name', parser: { meta: {} } },
+]
+
+it('require-typescript-parser rejects parser shapes with no TypeScript', () => {
+   for (const { name, parser } of rejected_parser_options) {
+      js_tester.run(`require-typescript-parser rejects (${name})`, as_rule_tester_rule(rule_module), {
+         invalid: [
+            {
+               code: JS_CODE,
+               errors: [{ messageId: 'missing_ts_parser' }],
+               filename: 'a.ts',
+               languageOptions: { parserOptions: { parser } },
+               name,
+            },
+         ],
+         valid: [],
+      })
+   }
+})
+

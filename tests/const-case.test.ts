@@ -9,41 +9,95 @@ it('const-case', () => {
             code: 'const foo = 1',
             errors: [{ messageId: 'upperCase' }],
             name: 'literal const in lower case',
+            output: 'const FOO = 1',
          },
          {
             code: 'const foo = -1',
             errors: [{ messageId: 'upperCase' }],
             name: 'negative literal const in lower case',
+            output: 'const FOO = -1',
          },
          {
             code: 'const foo = { a: 1 } as const',
             errors: [{ messageId: 'upperCase' }],
             name: 'as const object in lower case',
+            output: 'const FOO = { a: 1 } as const',
          },
          {
             code: 'const foo = { a: 1 } as const satisfies T',
             errors: [{ messageId: 'upperCase' }],
             name: 'as const satisfies in lower case',
+            output: 'const FOO = { a: 1 } as const satisfies T',
          },
          {
             code: 'let FOO = 1',
             errors: [{ messageId: 'lowerCase' }],
             name: 'let in UPPER_CASE',
+            output: 'let foo = 1',
          },
          {
             code: 'const FOO = bar()',
             errors: [{ messageId: 'lowerCase' }],
             name: 'computed const in UPPER_CASE',
+            output: 'const foo = bar()',
          },
          {
             code: 'const FOO = 1 as number',
             errors: [{ messageId: 'lowerCase' }],
             name: 'typed literal without as const in UPPER_CASE',
+            output: 'const foo = 1 as number',
          },
          {
             code: 'const foo = 1, BAR = 2',
             errors: [{ messageId: 'upperCase' }],
             name: 'multi-declarator reports the lower-case literal',
+            output: 'const FOO = 1, BAR = 2',
+         },
+         {
+            code: 'const fooBar = 1\nconst total = fooBar + 1',
+            errors: [{ messageId: 'upperCase' }],
+            name: 'fix renames the declaration and its references',
+            output: 'const FOO_BAR = 1\nconst total = FOO_BAR + 1',
+         },
+         {
+            code: 'const Foo = 1',
+            errors: [{ messageId: 'upperCase' }],
+            name: 'non-conventional casing is normalised by the fix',
+            output: 'const FOO = 1',
+         },
+         {
+            code: 'export const foo = 1',
+            errors: [
+               {
+                  messageId: 'upperCase',
+                  suggestions: [
+                     {
+                        data: { name: 'foo', next: 'FOO' },
+                        messageId: 'renameTo',
+                        output: 'export const FOO = 1',
+                     },
+                  ],
+               },
+            ],
+            name: 'exported const gets a suggestion, not an automatic fix',
+            output: null,
+         },
+         {
+            code: 'export const foo = 1\nexport const total = foo + 1',
+            errors: [
+               {
+                  messageId: 'upperCase',
+                  suggestions: [
+                     {
+                        data: { name: 'foo', next: 'FOO' },
+                        messageId: 'renameTo',
+                        output: 'export const FOO = 1\nexport const total = foo + 1',
+                     },
+                  ],
+               },
+            ],
+            name: 'exported const with readers is never auto-renamed',
+            output: null,
          },
       ],
       valid: [

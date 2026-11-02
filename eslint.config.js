@@ -5,7 +5,14 @@ import kaezon from './index.ts'
 
 export default [
    {
-      ignores: ['coverage/**', 'dist/**', 'node_modules/**'],
+      // examples/ ships failing code on purpose, so it is linted by its own
+      // config inside each example, not by the repo config.
+      ignores: [
+         'coverage/**',
+         'dist/**',
+         'examples/**',
+         'node_modules/**',
+      ],
    },
    js.configs.recommended,
    {

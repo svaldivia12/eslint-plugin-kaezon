@@ -70,6 +70,7 @@ const rule: KaezonRule<'preferObjectParams'> = {
       docs: {
          description:
             'Prefer a single object parameter over multiple positional parameters.',
+         url: 'https://github.com/svaldivia12/eslint-plugin-kaezon#kaezonprefer-object-params',
       },
       messages: {
          preferObjectParams:

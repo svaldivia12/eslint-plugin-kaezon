@@ -52,6 +52,7 @@ const rule: KaezonRule<'requireSatisfies'> = {
       docs: {
          description:
             'Require "as const satisfies SomeType" instead of bare "as const" to validate structure at compile time.',
+         url: 'https://github.com/svaldivia12/eslint-plugin-kaezon#kaezonrequire-satisfies-with-as-const',
       },
       messages: {
          requireSatisfies:
