@@ -12,10 +12,12 @@ pnpm build
 pnpm test
 ```
 
-TypeScript sources run directly on Node 26 (native type stripping), so the test
-suite imports `index.ts` without a build. `pnpm build` is still needed for
-`pnpm check:package`, for the test that imports the built package from `dist/`,
-and before publishing.
+The test suite imports `index.ts` directly and relies on Node's native type
+stripping, which needs a recent Node. `.nvmrc` pins the development version
+(Node 26) and CI runs the suite on it. The built package is separately checked
+on Node 20.19, 22.13, 24 and 26, matching the `engines` range.
+`pnpm build` is still needed for `pnpm check:package`, for the test that imports
+the built package from `dist/`, and before publishing.
 
 ## Scripts
 
