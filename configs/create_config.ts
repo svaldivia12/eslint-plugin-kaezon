@@ -204,8 +204,7 @@ export function create_config({
    plugin: KaezonPlugin
 }): FlatConfig {
    const preset = resolve_preset(options.preset ?? 'nuxt')
-   const files =
-      options.files === undefined ? [...default_files] : options.files
+   const files = options.files ?? [...default_files]
    const overlay = options.rules ?? {}
    const is_house = preset === 'nuxt_house'
 

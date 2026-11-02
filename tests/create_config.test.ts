@@ -184,6 +184,23 @@ describe('createConfig', () => {
       assert.deepEqual(config.files, ['**/*.ts'])
    })
 
+   it('keeps an explicitly empty files list', () => {
+      const config = kaezon.createConfig({ files: [] })
+      assert.deepEqual(config.files, [])
+   })
+
+   it('falls back to the default globs when files is missing', () => {
+      const config = kaezon.createConfig({ preset: 'ts' })
+
+      assert.deepEqual(config.files, [
+         '**/*.ts',
+         '**/*.tsx',
+         '**/*.mts',
+         '**/*.cts',
+         '**/*.vue',
+      ])
+   })
+
    it('throws on an unknown preset', () => {
       // Invalid presets are a runtime concern: the type rejects them, so the
       // tests that exercise the error path need an explicit escape hatch.
