@@ -1,10 +1,11 @@
 /**
- * Runs each example against the package in this repository. The workspace file
- * links `eslint-plugin-kaezon` into every example, so `pnpm install` at the
- * root is all the setup a fresh clone needs.
+ * Checks that each example still trips the rules it documents, using the
+ * package from this repository. `pnpm-workspace.yaml` links it into every
+ * example, so `pnpm install` at the root is all the setup a fresh clone needs.
  *
- * Every example ships code that fails on purpose, so the check is that the
- * expected rules actually report and that --fix does not leave unparsable code.
+ * The examples are read-only here on purpose: running `--fix` on a checked-in
+ * probe would rewrite the very violations this script exists to prove still
+ * happen. Autofix behaviour is covered by the RuleTester suites instead.
  *
  * Usage: node scripts/check_examples.ts
  */
@@ -22,7 +23,6 @@ interface Expectation {
 }
 
 interface LintMessage {
-   fatal?: boolean
    ruleId: string | null
 }
 
@@ -44,64 +44,39 @@ const expectations: readonly Expectation[] = [
    },
 ]
 
-function collect_rules(results: readonly LintFileResult[]): string[] {
+/**
+ * ESLint exits non-zero when it reports problems, which is the normal case
+ * here, so the JSON on stdout is what matters rather than the exit code.
+ */
+async function reported_rules({ cwd }: { cwd: string }): Promise<string[]> {
+   const { stdout } = await run('pnpm', ['exec', 'eslint', '--format', 'json', 'probe.ts'], {
+      cwd,
+   }).catch((error: unknown) => {
+      const failed = error as { stdout?: string }
+      return { stdout: failed.stdout ?? '[]' }
+   })
+
+   const results = JSON.parse(stdout) as LintFileResult[]
    const rules = results.flatMap(file => file.messages.map(message => message.ruleId))
    const unique = [...new Set(rules.filter((rule): rule is string => rule !== null))]
    return unique.sort((left, right) => left.localeCompare(right))
 }
 
-/**
- * ESLint exits non-zero when it reports problems, which is the normal case
- * here, so the JSON on stdout is what matters rather than the exit code.
- */
-async function lint_json({
-   cwd,
-   extra,
-}: {
-   cwd: string
-   extra?: string[]
-}): Promise<LintFileResult[]> {
-   const args = ['exec', 'eslint', '--format', 'json', ...(extra ?? []), 'probe.ts']
-   const { stdout } = await run('pnpm', args, { cwd }).catch((error: unknown) => {
-      const failed = error as { stdout?: string }
-      return { stdout: failed.stdout ?? '[]' }
-   })
-
-   return JSON.parse(stdout) as LintFileResult[]
-}
-
-async function check_example({ expect_rules, name }: Expectation): Promise<void> {
-   const cwd = path.join(repo_root, 'examples', name)
-
-   const reported = collect_rules(await lint_json({ cwd }))
+function check_example({ expect_rules, name }: Expectation, reported: readonly string[]): void {
    const missing = expect_rules.filter(rule => !reported.includes(rule))
    if (missing.length > 0) {
       throw new Error(`examples/${name}: expected these rules to report: ${missing.join(', ')}`)
    }
-
-   // --fix must not produce unparsable code, even when nothing is fixable.
-   await run('pnpm', ['exec', 'eslint', '--fix', 'probe.ts'], { cwd }).catch(() => {})
-   const after = await lint_json({ cwd })
-   const broken = after.flatMap(file => file.messages.filter(message => message.fatal))
-   if (broken.length > 0) {
-      throw new Error(`examples/${name}: --fix produced unparsable code`)
-   }
-
    process.stdout.write(`examples/${name}: reported ${reported.join(', ')}\n`)
-
-   const still = collect_rules(after)
-   process.stdout.write(
-      still.length > 0
-         ? `examples/${name}: still reported after --fix (expected, not auto-fixable): ${still.join(', ')}\n`
-         : `examples/${name}: clean after --fix\n`,
-   )
 }
 
-const runs = expectations.map(expectation => () => check_example(expectation))
-
-// Chained rather than `for … await`: the runs are sequential on purpose, since
-// each one shells out to eslint, and the intent reads clearly this way.
-await runs.reduce<Promise<void>>(
-   (previous, run_example) => previous.then(run_example),
-   Promise.resolve(),
+const collected = await Promise.all(
+   expectations.map(async expectation => ({
+      expectation,
+      reported: await reported_rules({ cwd: path.join(repo_root, 'examples', expectation.name) }),
+   })),
 )
+
+for (const { expectation, reported } of collected) {
+   check_example(expectation, reported)
+}
