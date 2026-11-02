@@ -1,4 +1,4 @@
-import type { TSESLint, TSESTree } from '@typescript-eslint/utils'
+import type { TSESLint } from '@typescript-eslint/utils'
 import type { ESLint, Linter } from 'eslint'
 
 export type FlatConfig = Linter.Config
@@ -64,4 +64,4 @@ export function to_plugin_rules(rules: KaezonRuleMap): KaezonPlugin['rules'] {
    return rules as unknown as KaezonPlugin['rules']
 }
 
-export type { TSESLint, TSESTree }
+export type { TSESLint, TSESTree } from '@typescript-eslint/utils'
