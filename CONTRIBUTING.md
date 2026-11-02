@@ -90,6 +90,12 @@ alone; the rule applies to new commits only.
 
 6. Run `pnpm build && pnpm lint && pnpm test && pnpm typecheck`.
 
+## Where questions go
+
+Usage questions ("why does this rule flag X?", "how do I configure the nuxt preset?") belong in
+[Discussions](https://github.com/svaldivia12/eslint-plugin-kaezon/discussions), not the issue tracker.
+Issues are for bugs with a reproduction and for concrete feature proposals.
+
 ## Rules that need type information
 
 Read `context.sourceCode.parserServices` and fall back to an AST-only check when `parserServices.program` is missing. `boolean-is-prefix` is the reference implementation.
