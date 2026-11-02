@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/svaldivia12/eslint-plugin-kaezon/security/advisories/new
+    about: Report security issues privately instead of opening a public issue.
+  - name: Question or usage help
+    url: https://github.com/svaldivia12/eslint-plugin-kaezon/discussions
+    about: Ask how to configure the plugin or a particular rule.
