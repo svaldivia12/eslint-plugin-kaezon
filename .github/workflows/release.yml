@@ -28,6 +28,15 @@ jobs:
          # Trusted publishing (OIDC) needs npm >= 11.5.1 and needs no NPM_TOKEN.
          - run: npm install --global npm@latest
          - run: pnpm install --frozen-lockfile
+         # Fail before publishing if the tag and package.json disagree: npm publishes
+         # whatever version package.json holds, whatever the tag says.
+         - name: Check the tag matches package.json
+           run: |
+              version="$(node -p "require('./package.json').version")"
+              if [ "${GITHUB_REF_NAME#v}" != "$version" ]; then
+                echo "::error::Tag ${GITHUB_REF_NAME} does not match package.json version ${version}"
+                exit 1
+              fi
          # Fail before publishing if the CHANGELOG has no section for this tag,
          # instead of publishing the package and then breaking the GitHub release.
          - run: node scripts/release_notes.ts "${GITHUB_REF_NAME#v}" --check
