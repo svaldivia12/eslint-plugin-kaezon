@@ -63,6 +63,10 @@ it('boolean-is-prefix (ast fallback)', () => {
             name: 'prefixed boolean literal',
          },
          {
+            code: 'const IS_FLAG = false',
+            name: 'UPPER_CASE prefix that const-case asks for on a literal',
+         },
+         {
             code: 'const count: Ref<number>',
             name: 'non-boolean Ref',
          },

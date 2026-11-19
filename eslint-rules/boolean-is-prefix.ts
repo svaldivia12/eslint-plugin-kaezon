@@ -163,7 +163,7 @@ const rule: KaezonRule<'missingIsPrefix'> = {
       }): void {
          if (id.type !== 'Identifier') return
          if (!is_boolean_binding({ id, init, type_services })) return
-         if (id.name.startsWith('is_')) return
+         if (id.name.startsWith('is_') || id.name.startsWith('IS_')) return
 
          context.report({
             data: { name: id.name },

@@ -149,13 +149,13 @@ export default [
 | `kaezon/require-typescript-parser`       | Require a TypeScript parser for TS files, and `vue-eslint-parser` with a TypeScript parser for Vue files                                | ts, vue, nuxt, nuxt_house |
 | `kaezon/vue-prop-name-casing-by-type`    | Enforce camelCase for function props and snake_case for other props in `defineProps`                                                    | vue, nuxt, nuxt_house     |
 
-`boolean-is-prefix` and `computed-explicit-return-type` target Vue code. In a project without Vue they match nothing, which is why they are left out of the `ts` preset.
+`boolean-is-prefix` and `computed-explicit-return-type` target Vue code, which is why they are left out of the `ts` preset. `computed-explicit-return-type` matches nothing without Vue, but `boolean-is-prefix` also reports plain TypeScript booleans (`const flag: boolean`), so turn it on through the `rules` overlay if you want that outside Vue.
 
 None of the rules accept options: every one declares an empty `schema`, so there is nothing to configure beyond on, off, or warn. Configure them through the preset and the `rules` overlay of `createConfig`.
 
 ### kaezon/boolean-is-prefix
 
-Requires an `is_` prefix on bindings that hold a boolean or a Vue boolean ref. Without typed linting it reads the AST: `boolean` annotations, `Ref<boolean>`, and boolean literals. With typed linting it asks the type checker, so an inferred `shallowRef(getFlag())` is caught too.
+Requires an `is_` prefix on bindings that hold a boolean or a Vue boolean ref. `IS_` is accepted too, so a literal constant that `const-case` puts in UPPER_CASE (`const IS_FLAG = false`) passes both rules. Without typed linting it reads the AST: `boolean` annotations, `Ref<boolean>`, and boolean literals. With typed linting it asks the type checker, so an inferred `shallowRef(getFlag())` is caught too.
 
 The prefix must read naturally in English. Do not add `is_` to a name where it produces nonsense.
 
