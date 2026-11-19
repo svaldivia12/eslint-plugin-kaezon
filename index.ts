@@ -1,10 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { create_config } from './configs/create_config.ts'
-import { create_nuxt_config } from './configs/nuxt.ts'
-import { create_nuxt_house_config } from './configs/nuxt_house.ts'
-import { create_ts_config } from './configs/ts.ts'
-import { create_vue_config } from './configs/vue.ts'
 import rules_module from './eslint-rules/index.ts'
 import { to_plugin_rules } from './types.ts'
 import type { CreateConfigOptions, KaezonPlugin } from './types.ts'
@@ -49,9 +45,9 @@ const plugin: KaezonPlugin = {
    rules: to_plugin_rules(rules_module.rules),
 }
 
-plugin.configs.nuxt = create_nuxt_config(plugin)
-plugin.configs.ts = create_ts_config(plugin)
-plugin.configs.vue = create_vue_config(plugin)
+plugin.configs.nuxt = create_config({ options: { preset: 'nuxt' }, plugin })
+plugin.configs.ts = create_config({ options: { preset: 'ts' }, plugin })
+plugin.configs.vue = create_config({ options: { preset: 'vue' }, plugin })
 
 /**
  * Lazily built: the nuxt_house preset needs eslint-plugin-vue and
@@ -62,7 +58,7 @@ Object.defineProperty(plugin.configs, 'nuxt_house', {
    configurable: true,
    enumerable: true,
    get(): KaezonPlugin['configs']['nuxt_house'] {
-      const config = create_nuxt_house_config(plugin)
+      const config = create_config({ options: { preset: 'nuxt_house' }, plugin })
       Object.defineProperty(plugin.configs, 'nuxt_house', {
          configurable: true,
          enumerable: true,
