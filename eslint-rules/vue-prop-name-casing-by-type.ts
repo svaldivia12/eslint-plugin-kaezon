@@ -1,4 +1,4 @@
-import type { KaezonRule, TSESLint, TSESTree } from '../types.ts'
+import type { KaezonRule, TSESTree } from '../types.ts'
 
 /**
  * Custom ESLint rule: enforce camelCase for function props, snake_case for other props.
@@ -28,33 +28,9 @@ function extract_define_props_call(node: TSESTree.CallExpression): TSESTree.Call
 
 function get_prop_name(node: TSESTree.TSPropertySignature): string | null {
    if (node.key.type === 'Identifier') return node.key.name
-   // A numeric or symbol literal key cannot be camelCase or snake_case, and
-   // renaming it would change the prop name the consumer must pass, so skip it.
+   // A numeric or symbol literal key has no name to case, so skip it.
    if (node.key.type === 'Literal' && typeof node.key.value === 'string') {
       return node.key.value
-   }
-   return null
-}
-
-/**
- * Renaming an identifier key is safe: the prop name is the identifier itself.
- * A string-literal key has to keep its quotes, otherwise the fix would emit
- * invalid syntax. Computed keys and template literals return null and get no fix.
- */
-function build_rename({
-   node,
-   next_name,
-}: {
-   node: TSESTree.TSPropertySignature
-   next_name: string
-}): ((fixer: TSESLint.RuleFixer) => TSESLint.RuleFix) | null {
-   const { key } = node
-   if (key.type === 'Identifier') {
-      return fixer => fixer.replaceText(key, next_name)
-   }
-   if (key.type === 'Literal' && typeof key.value === 'string') {
-      const quote = key.raw.startsWith('"') ? '"' : "'"
-      return fixer => fixer.replaceText(key, `${quote}${next_name}${quote}`)
    }
    return null
 }
@@ -97,7 +73,7 @@ function to_camel_case(name: string): string {
 }
 
 function to_snake_case(name: string): string {
-   return name.replaceAll(/([A-Z])/g, (_, char: string) => `_${char.toLowerCase()}`)
+   return name.replaceAll(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase()
 }
 
 const rule: KaezonRule<'functionCamelCase' | 'variableSnakeCase'> = {
@@ -113,7 +89,6 @@ const rule: KaezonRule<'functionCamelCase' | 'variableSnakeCase'> = {
             if (!expected) return
             context.report({
                data: { expected, name },
-               fix: build_rename({ next_name: expected, node: prop }),
                messageId: 'variableSnakeCase',
                node: prop.key,
             })
@@ -125,7 +100,6 @@ const rule: KaezonRule<'functionCamelCase' | 'variableSnakeCase'> = {
             if (!expected) return
             context.report({
                data: { expected, name },
-               fix: build_rename({ next_name: expected, node: prop }),
                messageId: 'functionCamelCase',
                node: prop.key,
             })
@@ -159,7 +133,6 @@ const rule: KaezonRule<'functionCamelCase' | 'variableSnakeCase'> = {
             'Enforce camelCase for function props and snake_case for other props in defineProps',
          url: 'https://github.com/svaldivia12/eslint-plugin-kaezon#kaezonvue-prop-name-casing-by-type',
       },
-      fixable: 'code',
       messages: {
          functionCamelCase: "Function prop '{{name}}' should be camelCase (e.g. {{expected}}).",
          variableSnakeCase: "Variable prop '{{name}}' should be snake_case (e.g. {{expected}}).",

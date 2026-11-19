@@ -14,7 +14,7 @@ it('vue-prop-name-casing-by-type', () => {
                },
             ],
             name: 'camelCase non-function prop',
-            output: 'defineProps<{ foo_bar: string }>()',
+            output: null,
          },
          {
             code: 'defineProps<{ on_click: () => void }>()',
@@ -25,7 +25,7 @@ it('vue-prop-name-casing-by-type', () => {
                },
             ],
             name: 'snake_case function prop',
-            output: 'defineProps<{ onClick: () => void }>()',
+            output: null,
          },
          {
             code: 'defineProps<{ on_click: string | (() => void) }>()',
@@ -36,7 +36,7 @@ it('vue-prop-name-casing-by-type', () => {
                },
             ],
             name: 'function in union type',
-            output: 'defineProps<{ onClick: string | (() => void) }>()',
+            output: null,
          },
          {
             code: 'defineProps<{ on_click: (() => void) & { extra: number } }>()',
@@ -47,7 +47,7 @@ it('vue-prop-name-casing-by-type', () => {
                },
             ],
             name: 'function in intersection type',
-            output: 'defineProps<{ onClick: (() => void) & { extra: number } }>()',
+            output: null,
          },
          {
             code: 'defineProps<{ on_click: (() => void) }>()',
@@ -58,7 +58,7 @@ it('vue-prop-name-casing-by-type', () => {
                },
             ],
             name: 'parenthesized function type',
-            output: 'defineProps<{ onClick: (() => void) }>()',
+            output: null,
          },
          {
             code: "defineProps<{ 'fooBar': string }>()",
@@ -69,7 +69,7 @@ it('vue-prop-name-casing-by-type', () => {
                },
             ],
             name: 'string key camelCase non-function',
-            output: "defineProps<{ 'foo_bar': string }>()",
+            output: null,
          },
          {
             code: 'withDefaults(defineProps<{ fooBar: string }>(), {})',
@@ -80,13 +80,22 @@ it('vue-prop-name-casing-by-type', () => {
                },
             ],
             name: 'withDefaults reports once',
-            output: 'withDefaults(defineProps<{ foo_bar: string }>(), {})',
+            output: null,
          },
          {
             code: "defineProps<{ 'bazQux': string }>()",
             errors: [{ messageId: 'variableSnakeCase' }],
-            name: 'double-quoted string key keeps its quotes',
-            output: "defineProps<{ 'baz_qux': string }>()",
+            name: 'another quoted string key',
+            output: null,
+         },
+         {
+            code: 'defineProps<{ userID: string; URL: string }>()',
+            errors: [
+               { data: { expected: 'user_id', name: 'userID' }, messageId: 'variableSnakeCase' },
+               { data: { expected: 'url', name: 'URL' }, messageId: 'variableSnakeCase' },
+            ],
+            name: 'acronyms get a snake_case hint the rule accepts',
+            output: null,
          },
       ],
       valid: [
@@ -138,7 +147,7 @@ it('vue-prop-name-casing-by-type in SFC', () => {
             errors: [{ messageId: 'variableSnakeCase' }],
             filename: 'a.vue',
             name: 'SFC camelCase value prop',
-            output: '<script setup lang="ts">defineProps<{ foo_bar: string }>()</script>',
+            output: null,
          },
       ],
       valid: [

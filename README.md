@@ -221,7 +221,7 @@ Two runnable projects live under `examples/`:
 - `examples/nuxt` — `configs.nuxt_house` with the house style and typed linting.
 
 Both ship code that fails on purpose, so `npx eslint probe.ts` shows the rules
-in action and `npx eslint probe.ts --fix` shows the automatic renames.
+in action.
 
 ## API
 

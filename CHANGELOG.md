@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `kaezon/const-case` offers a suggestion instead of an autofix when renaming could change behavior: a reader in a shorthand property (`{ page_size }`) or an export specifier (`export { limit }`), a `.vue` file whose template reads the binding, or a new name that already resolves in scope.
+- `kaezon/vue-prop-name-casing-by-type` reports only; its autofix is removed. It renamed the key in `defineProps` but not the usages or the parents that pass the prop. The hint for acronyms is now valid snake_case (`userID` → `user_id`, `URL` → `url`).
 
 ## [1.1.1] - 2026-11-02
 
