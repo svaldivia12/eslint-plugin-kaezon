@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `kaezon/boolean-is-prefix` accepts an `IS_` prefix, so `const IS_FLAG = false` passes it and `kaezon/const-case` at once. The README no longer claims it matches nothing outside Vue.
 - `kaezon/prefer-object-params` no longer reports a callback passed to `new`, such as `new Promise((resolve, reject) => …)`, whose signature the constructor dictates.
 - `@typescript-eslint/utils` is a dependency instead of a devDependency. The published `dist/types.d.ts` imports and re-exports its types, which did not resolve for consumers.
+- `kaezon/require-satisfies-with-as-const` is only silenced by a `satisfies` on the same expression, not by one on any enclosing expression, and skips `-1 as const` like `1 as const`.
+- `kaezon/computed-explicit-return-type` accepts a type argument (`computed<number>(() => 1)`) and checks the `get` of a writable `computed({ get, set })`.
 
 ## [1.1.1] - 2026-11-02
 

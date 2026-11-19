@@ -15,6 +15,16 @@ it('computed-explicit-return-type', () => {
             errors: [{ messageId: 'missingReturnType' }],
             name: 'untyped function getter',
          },
+         {
+            code: 'computed({ get() { return 1 }, set(value) {} })',
+            errors: [{ messageId: 'missingReturnType' }],
+            name: 'untyped get method in a writable computed',
+         },
+         {
+            code: 'computed({ get: () => 1, set: value => {} })',
+            errors: [{ messageId: 'missingReturnType' }],
+            name: 'untyped get arrow in a writable computed',
+         },
       ],
       valid: [
          {
@@ -34,8 +44,16 @@ it('computed-explicit-return-type', () => {
             name: 'non-function first argument',
          },
          {
-            code: 'computed({ get() { return 1 } })',
-            name: 'object getter argument',
+            code: 'computed<number>(() => 1)',
+            name: 'type argument on computed',
+         },
+         {
+            code: 'computed({ get(): number { return 1 }, set(value) {} })',
+            name: 'typed get in a writable computed',
+         },
+         {
+            code: 'computed<number>({ get() { return 1 }, set(value) {} })',
+            name: 'writable computed with a type argument',
          },
          {
             code: 'other(() => 1)',

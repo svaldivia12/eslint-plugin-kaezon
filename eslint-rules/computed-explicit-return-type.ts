@@ -13,13 +13,33 @@ function is_function_getter(
    return node?.type === 'ArrowFunctionExpression' || node?.type === 'FunctionExpression'
 }
 
+/** The getter of `computed(() => …)` or of a writable `computed({ get, set })`. */
+function find_getter(
+   node: TSESTree.CallExpressionArgument | undefined,
+): TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression | null {
+   if (is_function_getter(node)) return node
+   if (node?.type !== 'ObjectExpression') return null
+
+   const get = node.properties.find(
+      (property): property is TSESTree.Property =>
+         property.type === 'Property' &&
+         !property.computed &&
+         property.key.type === 'Identifier' &&
+         property.key.name === 'get',
+   )
+   return is_function_getter(get?.value) ? get.value : null
+}
+
 const rule: KaezonRule<'missingReturnType'> = {
    create(context) {
       function visit_call_expression(node: TSESTree.CallExpression): void {
          if (!is_computed_call(node)) return
 
-         const getter = node.arguments[0]
-         if (!is_function_getter(getter)) return
+         // `computed<T>(…)` types the getter through its type argument.
+         if (node.typeArguments) return
+
+         const getter = find_getter(node.arguments[0])
+         if (!getter) return
          if (getter.returnType?.type === 'TSTypeAnnotation') return
 
          context.report({

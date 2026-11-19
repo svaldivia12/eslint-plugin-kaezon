@@ -25,6 +25,11 @@ it('require-satisfies-with-as-const', () => {
             errors: [{ messageId: 'requireSatisfies' }],
             name: 'NaN as const',
          },
+         {
+            code: 'const x = { f: () => { const y = [1, 2] as const } } satisfies T',
+            errors: [{ messageId: 'requireSatisfies' }],
+            name: 'satisfies on an enclosing expression does not cover an inner as const',
+         },
       ],
       valid: [
          {
@@ -32,6 +37,7 @@ it('require-satisfies-with-as-const', () => {
             name: 'as const satisfies',
          },
          { code: 'const x = 1 as const', name: 'number primitive' },
+         { code: 'const x = -1 as const', name: 'negative number primitive' },
          { code: "const x = 'x' as const", name: 'string primitive' },
          { code: 'const x = true as const', name: 'boolean primitive' },
          { code: 'const x = null as const', name: 'null primitive' },

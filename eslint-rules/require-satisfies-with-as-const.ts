@@ -19,17 +19,18 @@ function is_bare_as_const(node: TSESTree.TSAsExpression): boolean {
       return false
    }
 
-   let current: TSESTree.Node | undefined = node.parent
-   while (current) {
-      if (current.type === 'TSSatisfiesExpression') return false
-      current = current.parent
-   }
-
-   return true
+   // Only `x as const satisfies T` checks x; a satisfies further out checks something else.
+   return node.parent.type !== 'TSSatisfiesExpression' || node.parent.expression !== node
 }
 
 function is_primitive_literal(node: TSESTree.TSAsExpression): boolean {
-   return node.expression.type === 'Literal'
+   const { expression } = node
+   return (
+      expression.type === 'Literal' ||
+      (expression.type === 'UnaryExpression' &&
+         expression.operator === '-' &&
+         expression.argument.type === 'Literal')
+   )
 }
 
 const rule: KaezonRule<'requireSatisfies'> = {

@@ -161,7 +161,7 @@ The prefix must read naturally in English. Do not add `is_` to a name where it p
 
 ### kaezon/computed-explicit-return-type
 
-Requires an explicit return type on getters passed to `computed`. Applies to arrow functions and function expressions.
+Requires an explicit return type on getters passed to `computed`, including the `get` of a writable `computed({ get, set })`. Applies to arrow functions, function expressions and methods. A type argument (`computed<number>(…)`) counts as the return type.
 
 ### kaezon/const-case
 
@@ -173,7 +173,7 @@ Prefers a single object parameter over multiple positional parameters. Callbacks
 
 ### kaezon/require-satisfies-with-as-const
 
-Requires `as const satisfies SomeType` instead of bare `as const`, so the object shape is validated at compile time while literal inference is preserved. Primitive literals are skipped because they need no structural check.
+Requires `as const satisfies SomeType` instead of bare `as const`, so the object shape is validated at compile time while literal inference is preserved. Primitive literals, negative numbers included, are skipped because they need no structural check. Only a `satisfies` on the same expression counts: one on an enclosing object does not cover an `as const` inside it.
 
 ### kaezon/require-typescript-parser
 
