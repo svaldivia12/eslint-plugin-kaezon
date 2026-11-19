@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `kaezon/const-case` offers a suggestion instead of an autofix when renaming could change behavior: a reader in a shorthand property (`{ page_size }`) or an export specifier (`export { limit }`), a `.vue` file whose template reads the binding, or a new name that already resolves in scope.
+
 ## [1.1.1] - 2026-11-02
 
 ### Fixed

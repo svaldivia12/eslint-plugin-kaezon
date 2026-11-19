@@ -81,6 +81,23 @@ function is_exported(declaration: TSESTree.VariableDeclaration): boolean {
    return parent?.type === 'ExportNamedDeclaration' || parent?.type === 'ExportDefaultDeclaration'
 }
 
+/**
+ * A rename is only safe when the new name is free in the binding's scope and
+ * every scope below it: otherwise a reader would resolve to another binding,
+ * or an outer binding would be captured by the renamed one.
+ */
+function is_name_taken({ name, scope }: { name: string; scope: TSESLint.Scope.Scope }): boolean {
+   if (scope.set.has(name)) return true
+   if (scope.references.some(reference => reference.identifier.name === name)) return true
+   return scope.childScopes.some(child => is_name_taken({ name, scope: child }))
+}
+
+/** Renaming a shorthand property or export specifier also renames its key or export. */
+function is_name_bound_elsewhere(identifier: TSESTree.Node): boolean {
+   const { parent } = identifier
+   return (parent?.type === 'Property' && parent.shorthand) || parent?.type === 'ExportSpecifier'
+}
+
 interface DeclarationShape {
    init: TSESTree.Node | null
    kind: TSESTree.VariableDeclaration['kind']
@@ -114,12 +131,13 @@ const rule: KaezonRule<'lowerCase' | 'renameTo' | 'upperCase'> = {
          identifier: TSESTree.Identifier
          next_name: string
       }): ((fixer: TSESLint.RuleFixer) => TSESLint.RuleFix[]) | null {
-         if (is_exported(declaration)) return null
+         // A .vue template reads the binding too, and the script scope cannot see it.
+         if (is_exported(declaration) || context.filename.endsWith('.vue')) return null
 
          const variable = source_code
             .getDeclaredVariables(declaration)
             .find(candidate => candidate.name === identifier.name)
-         if (!variable) return null
+         if (!variable || is_name_taken({ name: next_name, scope: variable.scope })) return null
 
          // Rename every occurrence in the file: the declaration plus all reads.
          // `identifiers` and `references` can share a node, so dedupe by range.
@@ -138,7 +156,7 @@ const rule: KaezonRule<'lowerCase' | 'renameTo' | 'upperCase'> = {
             targets.push(candidate as TSESTree.Identifier)
          }
 
-         if (targets.length === 0) return null
+         if (targets.length === 0 || targets.some(is_name_bound_elsewhere)) return null
 
          return fixer => targets.map(target => fixer.replaceText(target, next_name))
       }

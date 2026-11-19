@@ -1,6 +1,33 @@
 import { it } from 'node:test'
+import type { RuleTester } from 'eslint'
 import rule_module from '../eslint-rules/const-case.ts'
-import { as_rule_tester_rule, ts_tester } from './helpers/rule_tester.ts'
+import { as_rule_tester_rule, ts_tester, vue_tester } from './helpers/rule_tester.ts'
+
+function suggest_only({
+   code,
+   name,
+   next,
+   suggested,
+   title,
+}: {
+   code: string
+   name: string
+   next: string
+   suggested: string
+   title: string
+}): RuleTester.InvalidTestCase {
+   return {
+      code,
+      errors: [
+         {
+            messageId: 'upperCase',
+            suggestions: [{ data: { name, next }, messageId: 'renameTo', output: suggested }],
+         },
+      ],
+      name: title,
+      output: null,
+   }
+}
 
 it('const-case', () => {
    ts_tester.run('const-case', as_rule_tester_rule(rule_module), {
@@ -105,6 +132,35 @@ it('const-case', () => {
             name: 'exported const with readers is never auto-renamed',
             output: null,
          },
+         suggest_only({
+            code: 'const page_size = 20\nconst opts = { page_size }',
+            name: 'page_size',
+            next: 'PAGE_SIZE',
+            suggested: 'const PAGE_SIZE = 20\nconst opts = { page_size }',
+            title: 'a shorthand property reader would change the object key',
+         }),
+         suggest_only({
+            code: 'const limit = 10\nexport { limit }',
+            name: 'limit',
+            next: 'LIMIT',
+            suggested: 'const LIMIT = 10\nexport { limit }',
+            title: 'an export specifier would change the exported name',
+         }),
+         suggest_only({
+            code: 'const timeout = 30\nfunction f(TIMEOUT) {\n   return TIMEOUT + timeout\n}',
+            name: 'timeout',
+            next: 'TIMEOUT',
+            suggested: 'const TIMEOUT = 30\nfunction f(TIMEOUT) {\n   return TIMEOUT + timeout\n}',
+            title: 'the new name is shadowed where the binding is read',
+         }),
+         suggest_only({
+            code: 'const TIMEOUT = 5\nfunction g() {\n   const timeout = 1\n   return TIMEOUT + timeout\n}',
+            name: 'timeout',
+            next: 'TIMEOUT',
+            suggested:
+               'const TIMEOUT = 5\nfunction g() {\n   const TIMEOUT = 1\n   return TIMEOUT + timeout\n}',
+            title: 'the new name already resolves to an outer binding',
+         }),
       ],
       valid: [
          { code: 'const FOO = 1', name: 'numeric literal' },
@@ -138,5 +194,24 @@ it('const-case', () => {
             name: 'multi-declarator all UPPER_CASE literals',
          },
       ],
+   })
+})
+
+it('const-case in SFC', () => {
+   vue_tester.run('const-case in SFC', as_rule_tester_rule(rule_module), {
+      invalid: [
+         {
+            ...suggest_only({
+               code: '<script setup lang="ts">const page_size = 20</script>\n<template>{{ page_size }}</template>',
+               name: 'page_size',
+               next: 'PAGE_SIZE',
+               suggested:
+                  '<script setup lang="ts">const PAGE_SIZE = 20</script>\n<template>{{ page_size }}</template>',
+               title: 'the template is not renamed, so a .vue file gets no fix',
+            }),
+            filename: 'a.vue',
+         },
+      ],
+      valid: [],
    })
 })
