@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-19
+
 ### Fixed
 
 - `kaezon/const-case` offers a suggestion instead of an autofix when renaming could change behavior: a reader in a shorthand property (`{ page_size }`) or an export specifier (`export { limit }`), a `.vue` file whose template reads the binding, or a new name that already resolves in scope.
@@ -67,7 +69,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `configs.nuxt_house` requires `eslint-plugin-vue` and `@typescript-eslint/eslint-plugin`.
 - The plugin ships no parser. Use `@typescript-eslint/parser` and `vue-eslint-parser` in the consuming project.
 
-[Unreleased]: https://github.com/svaldivia12/eslint-plugin-kaezon/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/svaldivia12/eslint-plugin-kaezon/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/svaldivia12/eslint-plugin-kaezon/releases/tag/v1.2.0
 [1.1.1]: https://github.com/svaldivia12/eslint-plugin-kaezon/releases/tag/v1.1.1
 [1.1.0]: https://github.com/svaldivia12/eslint-plugin-kaezon/releases/tag/v1.1.0
 [1.0.0]: https://github.com/svaldivia12/eslint-plugin-kaezon/releases/tag/v1.0.0
