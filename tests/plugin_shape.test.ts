@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict'
+import { readFileSync, readdirSync } from 'node:fs'
+import path from 'node:path'
 import { describe, it } from 'node:test'
+import { fileURLToPath } from 'node:url'
 import kaezon from '../index.ts'
+
+const package_root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
 const rule_ids = [
    'kaezon/boolean-is-prefix',
@@ -44,6 +49,32 @@ describe('plugin entry point', () => {
    it('reports kaezon rule ids without the plugin prefix', () => {
       for (const name of Object.keys(kaezon.rules)) {
          assert.equal(name.includes('/'), false, `${name} should be prefixed on use`)
+      }
+   })
+
+   it('declares every package the published types import', () => {
+      const manifest = JSON.parse(
+         readFileSync(path.join(package_root, 'package.json'), 'utf8'),
+      ) as {
+         dependencies?: Record<string, string>
+         peerDependencies?: Record<string, string>
+      }
+      const declared = new Set(
+         Object.keys({ ...manifest.dependencies, ...manifest.peerDependencies }),
+      )
+      const dist_dir = path.join(package_root, 'dist')
+      const imported = readdirSync(dist_dir, { recursive: true })
+         .map(String)
+         .filter(file => file.endsWith('.d.ts'))
+         .flatMap(file =>
+            [
+               ...readFileSync(path.join(dist_dir, file), 'utf8').matchAll(/from '([^.][^']*)'/g),
+            ].map(match => match[1] ?? ''),
+         )
+
+      assert.ok(imported.length > 0, 'expected dist/*.d.ts to import packages')
+      for (const specifier of imported) {
+         assert.ok(declared.has(specifier), `${specifier} is imported by dist/*.d.ts`)
       }
    })
 })
