@@ -25,7 +25,7 @@ function is_computed_getter(node: TSESTree.Node): boolean {
 
 /**
  * A function whose signature is dictated by something other than its body: an
- * object property, a class method, or a callback passed to a call. Changing
+ * object property, a class method, or a callback passed to a call or `new`. Changing
  * their parameters would change a public API or break the caller.
  */
 function is_external_callback(node: TSESTree.Node): boolean {
@@ -34,7 +34,7 @@ function is_external_callback(node: TSESTree.Node): boolean {
    if (parent.type === 'Property') return true
    if (parent.type === 'MethodDefinition') return true
    if (parent.type === 'PropertyDefinition') return true
-   if (parent.type === 'CallExpression') return true
+   if (parent.type === 'CallExpression' || parent.type === 'NewExpression') return true
    return false
 }
 

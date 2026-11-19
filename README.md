@@ -169,7 +169,7 @@ UPPER_CASE for `const` bindings initialised with a literal or `as const`, lower 
 
 ### kaezon/prefer-object-params
 
-Prefers a single object parameter over multiple positional parameters. Callbacks (functions passed as arguments or properties), object methods, and `computed()` getters are skipped, because their signature is dictated by the caller.
+Prefers a single object parameter over multiple positional parameters. Callbacks (functions passed as arguments to a call or `new`, or as properties), object methods, and `computed()` getters are skipped, because their signature is dictated by the caller.
 
 ### kaezon/require-satisfies-with-as-const
 

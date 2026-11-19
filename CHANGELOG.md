@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `kaezon/const-case` offers a suggestion instead of an autofix when renaming could change behavior: a reader in a shorthand property (`{ page_size }`) or an export specifier (`export { limit }`), a `.vue` file whose template reads the binding, or a new name that already resolves in scope.
 - `kaezon/vue-prop-name-casing-by-type` reports only; its autofix is removed. It renamed the key in `defineProps` but not the usages or the parents that pass the prop. The hint for acronyms is now valid snake_case (`userID` → `user_id`, `URL` → `url`).
 - `kaezon/boolean-is-prefix` accepts an `IS_` prefix, so `const IS_FLAG = false` passes it and `kaezon/const-case` at once. The README no longer claims it matches nothing outside Vue.
+- `kaezon/prefer-object-params` no longer reports a callback passed to `new`, such as `new Promise((resolve, reject) => …)`, whose signature the constructor dictates.
 
 ## [1.1.1] - 2026-11-02
 

@@ -67,6 +67,10 @@ it('prefer-object-params', () => {
             name: 'call argument callback',
          },
          {
+            code: 'new Promise((resolve, reject) => {})',
+            name: 'constructor argument callback',
+         },
+         {
             code: 'computed((a, b) => 1)',
             name: 'computed getter',
          },
